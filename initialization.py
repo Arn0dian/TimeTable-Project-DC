@@ -38,6 +38,7 @@ tdf = cp.loc[cp['Type'] == 'L']
 for i, j in zip(tdf['Course_Name'], tdf['NOCW']):
     subject_lab_credithour_dict[i] = j
 
+# add subject_credithour_dict here
 
 for i in total_batch_list:
      tdf = cp.loc[cp['Semester'] == i]
@@ -47,5 +48,4 @@ for i in total_batch_list:
         else:
             subject_batch_dict[i].append(j)
 
-    
 
