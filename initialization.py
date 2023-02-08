@@ -103,4 +103,4 @@ for i in pop:
     print(i)
 
 # Write the basic fitness functions here now and elaborately understand how it will work
- 
+# Also how to print TT
