@@ -101,3 +101,6 @@ for i in range(popz):
     pop.append(initializeChromosome())
 for i in pop:
     print(i)
+
+# Write the basic fitness functions here now and elaborately understand how it will work
+ 
