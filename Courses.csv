@@ -22,7 +22,7 @@ Course_ID,Course_Name,Course_Code,Semester,Faculty_id,NOCW,Type
 21,Object Oriented Programming In Java Lab,OOPJ Lab,2,7,2,L
 22,Data Structures and Algorithms,DSA,2,6,3,N
 23,Data Structures and Algorithms Lab,DSA Lab,2,6,2,L
-24,Engineering Workshop,EW,2,12,2,W
+24,Engineering Workshop,EW,2,12,2,L
 25,Engineering Mathematics II,EM II,2,5,4,N
 26,Modern Biology,MB,2,10,4,N
 27,Environmental Studies,ES,2,11,2,N
