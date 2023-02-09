@@ -19,6 +19,7 @@ lab_alloted = {2:6,4:7,6:7,8:6}
 subject_lab_credithour_dict = {}
 subject_credithour_dict = {}
 subject_batch_dict = {}
+no_class_hours_dict = {}
 subject_batch_ind_dict = {}
 subject_teacher_dict = {}
 course_type_dict = {}
@@ -50,7 +51,15 @@ def initializeTables():
                 subject_batch_dict[i] = [j]
             else:
                 subject_batch_dict[i].append(j)
-    
+    for i in total_batch_list:
+        tdf = cp.loc[cp['Semester'] == i]
+        sch = 0
+        for j in tdf['NOCW']:
+            sch+=j
+        subject_batch_dict[i].append('NC'+str(i))
+        no_class_hours_dict['NC'+str(i)] = 30-sch
+        course_type_dict['NC'+str(i)] = 'NC'
+        
     for i, j in zip(cp['Course_Code'], cp['Semester']):
         subject_batch_ind_dict[i] = j
 
@@ -59,6 +68,7 @@ def initializeTables():
 
     for i, j in zip(cp['Course_Code'], cp['Type']):
         course_type_dict[i] = j
+    
 #---------------------------------------------------------#
 
 # Intialization 
@@ -77,20 +87,34 @@ def initializeChromosome():
                 slot.append('')
             day.append(slot)
         week.append(day)
+        
     for day in week:
         for slot in day:
             for i in range(len(slot)):
-                rn = random.randint(0, len(subject_batch_dict[(i*2)+2]))
-                if rn <=len(subject_batch_dict[(i*2)+2])-1:
-                    sub = subject_batch_dict[(i*2)+2][rn]
-                    if course_type_dict[sub] == 'N':
-                        if subject_credithour_dict[sub]>0:
-                            slot[i] += sub
-                            subject_credithour_dict[sub]-=1
-                    elif course_type_dict[sub] == "L":
-                        if subject_lab_credithour_dict[sub]>0:
-                            slot[i] += sub
-                            subject_lab_credithour_dict[sub]-=1
+                rn = random.randint(0, len(subject_batch_dict[(i*2)+2])-1)
+                sub = subject_batch_dict[(i*2)+2][rn]
+                if course_type_dict[sub] == 'NC':
+                    if no_class_hours_dict[sub]>0:
+                        slot[i] += ''
+                        no_class_hours_dict[sub]-=1
+                        if no_class_hours_dict[sub] == 0:
+                            subject_batch_dict[(i*2)+2].remove(sub)
+                elif course_type_dict[sub] == 'N':
+                    if subject_credithour_dict[sub]>0:
+                        slot[i] += sub
+                        subject_credithour_dict[sub]-=1
+                        if subject_credithour_dict[sub] == 0:
+                            subject_batch_dict[(i*2)+2].remove(sub)
+                elif course_type_dict[sub] == "L":
+                    if subject_lab_credithour_dict[sub]>0:
+                        slot[i] += sub
+                        subject_lab_credithour_dict[sub]-=1 
+                        if subject_lab_credithour_dict[sub] == 0:
+                            subject_batch_dict[(i*2)+2].remove(sub)
+                           
+
+    # Add remaining classes brute-force-ly or think of something else
+
     return week
 
 # week = initializeChromosome()
@@ -103,13 +127,14 @@ def initializeChromosome():
 
 
 # Create a population 
-popz = 100
+popz = 10000
 pop = []
 for i in range(popz):
     pop.append(initializeChromosome())
 # for i in pop:
 #     print(i)
 
+# ---------------------------------------------------------------------#
 
 # Fitness evaluation 
 
@@ -136,27 +161,26 @@ def fitnessFunction(chromosome):
                             # Lab clash check
                             if sub!=osub and course_type_dict[sub]=='L' and course_type_dict[osub]=='L':   
                                 if lab_alloted[subject_batch_ind_dict[sub]] == lab_alloted[subject_batch_ind_dict[osub]]:
-                                    c+=1         
+                                    c+=1   
+                            # Add more conflicts here       
         return c//2
 
-    def softContraints(week):
-        c = 0
-        for day in week:
-            for slot in day:
-                for sub in slot:
-                    for osub in slot:
-                        if sub!='' and osub!='':   
-                            
-                            
-        return c//2
+    # def softContraints(week):
+    #     c = 0
+    #     for day in week:
+    #         for slot in day:
+    #             for sub in slot:
+    #                 for osub in slot:
+    #                     if sub!='' and osub!='':                       
+    #     return c//2
     
 
     hconflicts += hardConstraints(chromosome)
-    # Add more conflicts here 
+    
     total_val += 1/(1+hconflicts)
-    total_val += 1/(2+sconflicts)
+    # total_val += 1/(2+sconflicts)
 
-    return (1/(1+hconflicts))
+    return (total_val)
 
 # Fitness Calculations
 Fit_values = []
@@ -167,5 +191,7 @@ with open("best_chromosome.txt", "a") as f:
    f.write(str(pop[Fit_values.index(max(Fit_values))]))
    f.write("\n")
 
-for i in range(len(pop)):
-    print(pop[i],Fit_values[i])
+# for i in range(len(pop)):
+#     print(pop[i],Fit_values[i])
+
+print(pop[Fit_values.index(max(Fit_values))],max(Fit_values))
