@@ -127,7 +127,7 @@ def initializeChromosome():
 
 
 # Create a population 
-popz = 10000
+popz = 1
 pop = []
 for i in range(popz):
     pop.append(initializeChromosome())
@@ -147,7 +147,6 @@ for i in range(popz):
 def fitnessFunction(chromosome):
     total_val = 0
     hconflicts = 0
-    sconflicts = 0
     def hardConstraints(week):
         c = 0
         for day in week:
@@ -162,7 +161,51 @@ def fitnessFunction(chromosome):
                             if sub!=osub and course_type_dict[sub]=='L' and course_type_dict[osub]=='L':   
                                 if lab_alloted[subject_batch_ind_dict[sub]] == lab_alloted[subject_batch_ind_dict[osub]]:
                                     c+=1   
-                            # Add more conflicts here       
+
+
+        # Faculty should get a slot off after teaching 2 hours continously ( not nessacary to same batch )  
+        # for day in week:
+        #     for i in range(5):
+        #         print(day[i],day[i+1])
+        #         for s1 in day[i]:
+        #             # How to handle faculty conflicts and repeating classes ?
+        #             for s2 in day[i+1]:
+
+
+        # Every batch should have only one class of 2 continous classes 
+        # And no class should be repeated after later in day or should only be 2 hours class
+        wc = 0 
+        dc = 0
+        sub_count_day = {}
+        for day in week:
+            for i in range(0,5,2):
+                print(day[i][0],day[i+1][0])
+                s1 = day[i][0]
+                s2 = day[i+1][0]
+
+                if s1 != s2:
+                    if s1 not in sub_count_day and s2 not in sub_count_day:
+                        sub_count_day[s1] = 1
+                        sub_count_day[s2] = 1
+                    elif s1 not in sub_count_day and s2 in sub_count_day:
+                        sub_count_day[s1] = 1
+                        sub_count_day[s2] += 1
+                        dc+=1
+                    elif s1 in sub_count_day and s2 not in sub_count_day:
+                        sub_count_day[s1] += 1
+                        sub_count_day[s2] = 1
+                        dc+=1
+
+
+
+
+        for day in week:
+            for slot in day:
+                print(slot,end=" ")
+            print()
+
+
+
         return c//2
 
     # def softContraints(week):
@@ -194,4 +237,4 @@ with open("best_chromosome.txt", "a") as f:
 # for i in range(len(pop)):
 #     print(pop[i],Fit_values[i])
 
-print(pop[Fit_values.index(max(Fit_values))],max(Fit_values))
+# print(pop[Fit_values.index(max(Fit_values))],max(Fit_values))
