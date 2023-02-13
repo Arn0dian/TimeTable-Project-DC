@@ -144,7 +144,7 @@ def closeChromosome(week):
 
 
 # Create a population 
-popz = 1
+popz = 50
 pop = []
 for i in range(popz):
     pop.append(initializeChromosome())
@@ -162,10 +162,12 @@ for i in range(popz):
 # if c is 0 the max value of 1 is added 
 
 def fitnessFunction(chromosome):
+
     fitness_value = 0
     hconflicts = 0
     def hardConstraints(week):
-        c = 0
+        f1 = 0
+        c1 = 0
         for day in week:
             for slot in day:
                 for sub in slot:
@@ -173,13 +175,13 @@ def fitnessFunction(chromosome):
                         if sub!='' and osub!='':   
                             # Faculty clash check
                             if sub!=osub and subject_teacher_dict[sub]==subject_teacher_dict[osub]:
-                                c+=1
+                                c1+=1
                             # Lab clash check
                             if sub!=osub and course_type_dict[sub]=='L' and course_type_dict[osub]=='L':   
                                 if lab_alloted[subject_batch_ind_dict[sub]] == lab_alloted[subject_batch_ind_dict[osub]]:
-                                    c+=1   
+                                    c1+=1   
 
-
+        f1 = 1/(1+c1)
         # Faculty should get a slot off after teaching 2 hours continously ( not nessacary to same batch )  
         # for day in week:
         #     for i in range(5):
@@ -191,35 +193,51 @@ def fitnessFunction(chromosome):
 
         # Every batch should have only one class of 2 continous classes 
         # And no class should be repeated after later in day or should only be 2 hours class
-        wc = 0 
-        dc = 0
-        sub_count_day = {}
+        
+        # We calculate these conflicts by calculating the total count of a subject in a day and the longest continous class of 
+        # that subject ; then no. of conflict = (total class - longest class) + (longest class - 2)
+        f2 =0
+        c2 = 0
+        two_class_day = set()
+        day_classes = []
+        classes_in_day = set()
         for day in week:
-            for i in range(0,5,2):
-                print(day[i][0],day[i+1][0])
-                s1 = day[i][0]
-                s2 = day[i+1][0]
+            for j in range(4):
+                for i in range(6):
+                    day_classes.append(day[i][j])
+                # We apply the checks here on each day classes of each batch
+                for sub in day_classes:
+                    if sub!='' and sub not in classes_in_day:
+                        classes_in_day.add(sub)
+                        tc = day_classes.count(sub)
+                        c = 0
+                        lc = 0
+                        for i in range(len(day_classes)):
+                            if day_classes[i] == sub:
+                                c+=1
+                            else:
+                                lc = max(lc,c)
+                                c = 0
+                        lc = max(lc,c)
+                        
+                        if lc>=2:
+                            two_class_day.add(sub)
+                        # Added the conflicts 
+                        if lc == 1:
+                            c2+= (tc-lc)
+                        else:
+                            c2+= (tc-lc)+(lc-2)
 
-                if s1 != s2:
-                    if s1 not in sub_count_day and s2 not in sub_count_day:
-                        sub_count_day[s1] = 1
-                        sub_count_day[s2] = 1
-                    elif s1 not in sub_count_day and s2 in sub_count_day:
-                        sub_count_day[s1] = 1
-                        sub_count_day[s2] += 1
-                        dc+=1
-                    elif s1 in sub_count_day and s2 not in sub_count_day:
-                        sub_count_day[s1] += 1
-                        sub_count_day[s2] = 1
-                        dc+=1
+                if len(two_class_day)>1:
+                    c2+= len(two_class_day)-1
+                two_class_day.clear()
+                classes_in_day.clear()
+                day_classes = []
 
+        f2 = 1/(1+c2)
+        return f1+f2
 
-
-        return c//2
-
-    hconflicts += hardConstraints(chromosome)
-    
-    fitness_value += 1/(1+hconflicts)
+    fitness_value += hardConstraints(chromosome)
     # total_val += 1/(2+sconflicts)
 
     return (fitness_value)
@@ -231,11 +249,7 @@ Fit_values = []
 for chromosome in pop:
     Fit_values.append(fitnessFunction(chromosome))
 
-with open("best_chromosome.txt", "a") as f:
-   f.write(str(pop[Fit_values.index(max(Fit_values))]))
-   f.write("\n")
-
 # for i in range(len(pop)):
 #     print(pop[i],Fit_values[i])
 
-# print(pop[Fit_values.index(max(Fit_values))],max(Fit_values))
+print(pop[Fit_values.index(max(Fit_values))],max(Fit_values))
