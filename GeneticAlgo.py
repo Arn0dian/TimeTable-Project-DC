@@ -125,6 +125,23 @@ def initializeChromosome():
 # for i in subject_lab_credithour_dict:
 #     print(i,subject_lab_credithour_dict[i])
 
+def openChromosome(week):
+    oweek = []
+    for day in week:
+            for slot in day:
+                for sub in slot:
+                    oweek.append(sub)
+    return oweek
+
+def closeChromosome(week):
+    cweek = []
+    slotting = []
+    for i in range(0,len(week),4):
+        slotting.append(week[i:i+4])
+    for i in range(0,len(slotting),6):
+        cweek.append(slotting[i:i+6])
+    return cweek
+
 
 # Create a population 
 popz = 1
@@ -145,7 +162,7 @@ for i in range(popz):
 # if c is 0 the max value of 1 is added 
 
 def fitnessFunction(chromosome):
-    total_val = 0
+    fitness_value = 0
     hconflicts = 0
     def hardConstraints(week):
         c = 0
@@ -198,34 +215,18 @@ def fitnessFunction(chromosome):
 
 
 
-
-        for day in week:
-            for slot in day:
-                print(slot,end=" ")
-            print()
-
-
-
         return c//2
-
-    # def softContraints(week):
-    #     c = 0
-    #     for day in week:
-    #         for slot in day:
-    #             for sub in slot:
-    #                 for osub in slot:
-    #                     if sub!='' and osub!='':                       
-    #     return c//2
-    
 
     hconflicts += hardConstraints(chromosome)
     
-    total_val += 1/(1+hconflicts)
+    fitness_value += 1/(1+hconflicts)
     # total_val += 1/(2+sconflicts)
 
-    return (total_val)
+    return (fitness_value)
+
 
 # Fitness Calculations
+
 Fit_values = []
 for chromosome in pop:
     Fit_values.append(fitnessFunction(chromosome))
