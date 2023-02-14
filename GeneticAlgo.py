@@ -111,19 +111,8 @@ def initializeChromosome():
                         subject_lab_credithour_dict[sub]-=1 
                         if subject_lab_credithour_dict[sub] == 0:
                             subject_batch_dict[(i*2)+2].remove(sub)
-                           
-
-    # Add remaining classes brute-force-ly or think of something else
 
     return week
-
-# week = initializeChromosome()
-# for i in week:
-#     print(i)
-# for i in subject_credithour_dict:
-#     print(i,subject_credithour_dict[i])
-# for i in subject_lab_credithour_dict:
-#     print(i,subject_lab_credithour_dict[i])
 
 def openChromosome(week):
     oweek = []
@@ -148,8 +137,7 @@ popz = 100
 pop = []
 for i in range(popz):
     pop.append(initializeChromosome())
-# for i in pop:
-#     print(i)
+
 
 # ---------------------------------------------------------------------#
 
@@ -238,7 +226,6 @@ def fitnessFunction(chromosome):
 
     fitness_value += hardConstraints(chromosome)
 
-
     return (fitness_value)
 
 
@@ -262,46 +249,95 @@ for chromosome in pop:
 
 # Non-Random multipoint : We can fix the no. of points of crossover to suitable value
 
-# Selection ( of parents )
-roullete_pool = []
-for i in range(len(pop)):
-    for j in range(int(Fit_values[i]*1000)):
-        roullete_pool.append(pop[i])
+def crossover(pop):
+    
+    # Selection ( of parents )
+    roullete_pool = []
+    for i in range(len(pop)):
+        for j in range(int(Fit_values[i]*1000)):
+            roullete_pool.append(pop[i])
 
-# Roullete Wheel selection of parents
-p1 = random.randint(0,len(roullete_pool))
-p2 = random.randint(0,len(roullete_pool))
-# print(p1,p2)
-# print(roullete_pool[p1])
-# print(roullete_pool[p2])
+    # Roullete Wheel selection of parents
+    p1 = random.randint(0,len(roullete_pool))
+    p2 = random.randint(0,len(roullete_pool))
 
-def crossover(p1,p2):
-    parent1 = openChromosome(p1)
-    parent2 = openChromosome(p2)
+    parent1 = openChromosome(roullete_pool[p1])
+    parent2 = openChromosome(roullete_pool[p2])
+    # Will crossover happen.? A probability
 
-    # 10 Multipoint crossover 
-    N = 9
-    cpoints = []
+
+    # N Multipoint crossover 
+    N = 15
+    cpoints = [0]
     for i in range(N):
-        cpoints.append(random.randint(0,120))
+        cpoints.append(random.randint(1,119))
     cpoints = sorted(list(set(cpoints)))
     cpoints.append(120)
-    print(cpoints)
-    ip = 0
 
     offspring1 = []
-    for i in range(0,N,2):
-        fp = cpoints[i]
-        offspring1.append(parent1[ip:fp])
-        ip = fp
-        fp = cpoints[i+1]
-        offspring1.append(parent2[ip:fp])
-        ip = fp
-    print(parent1)
-    print(parent2)
-    print(len(offspring1))
+    for i in range(0,len(cpoints)-1):
+        if (i%2)==0:
+            for j in range(cpoints[i],cpoints[i+1]):
+                offspring1.append(parent1[j])
+        else:
+            for j in range(cpoints[i],cpoints[i+1]):
+                offspring1.append(parent2[j])
+
+    offspring2 = []
+    for i in range(0,len(cpoints)-1):
+        if (i%2)==0:
+            for j in range(cpoints[i],cpoints[i+1]):
+                offspring2.append(parent2[j])
+        else:
+            for j in range(cpoints[i],cpoints[i+1]):
+                offspring2.append(parent1[j])
+            
+            
+    offspring1 = closeChromosome(offspring1)
+    offspring2 = closeChromosome(offspring2)
+
+
+    # Mutation --------------------------------------------#
+    # We perform swap or scramble mutation
 
 
 
 
-crossover(roullete_pool[p1],roullete_pool[p2])
+
+    return [offspring1,offspring2]
+    # print(parent1,fitnessFunction(closeChromosome(parent1)))
+    # print(parent2,fitnessFunction(closeChromosome(parent2)))
+    # print(offspring1,fitnessFunction(offspring1))
+    # print(offspring2,fitnessFunction(offspring2))
+
+#----------------------------------------------------------------#
+
+# New generation from crossover
+
+# This will return a 100 sized new generation of childrens
+# Sometimes it maybe good sometimes it maybe shit
+
+generations = 100
+
+while generations!=0:
+
+    # Will make new child population 
+    childrenpop = []
+    childFit_value = []
+    temppop = pop.copy()
+
+
+    while len(childrenpop)!=len(temppop):
+        childrens = crossover(temppop)
+        o1,o2 = childrens[0],childrens[1]
+        childrenpop.append(o1)
+        childFit_value.append(fitnessFunction(o1))
+        childrenpop.append(o2)
+        childFit_value.append(fitnessFunction(o2))
+    
+    # Will select the best 100 from initial pop and 
+
+
+
+
+# print(childrenpop[childFit_value.index(max(childFit_value))],max(childFit_value))
