@@ -144,7 +144,7 @@ def closeChromosome(week):
 
 
 # Create a population 
-popz = 50
+popz = 100
 pop = []
 for i in range(popz):
     pop.append(initializeChromosome())
@@ -166,7 +166,9 @@ def fitnessFunction(chromosome):
     fitness_value = 0
     hconflicts = 0
     def hardConstraints(week):
-        f1 = 0
+        
+        # No faculty should have two classes alloted in same slot of time
+        # No two batches should have same lab alloted to them in same slot of time
         c1 = 0
         for day in week:
             for slot in day:
@@ -181,7 +183,6 @@ def fitnessFunction(chromosome):
                                 if lab_alloted[subject_batch_ind_dict[sub]] == lab_alloted[subject_batch_ind_dict[osub]]:
                                     c1+=1   
 
-        f1 = 1/(1+c1)
         # Faculty should get a slot off after teaching 2 hours continously ( not nessacary to same batch )  
         # for day in week:
         #     for i in range(5):
@@ -196,7 +197,6 @@ def fitnessFunction(chromosome):
         
         # We calculate these conflicts by calculating the total count of a subject in a day and the longest continous class of 
         # that subject ; then no. of conflict = (total class - longest class) + (longest class - 2)
-        f2 =0
         c2 = 0
         two_class_day = set()
         day_classes = []
@@ -234,11 +234,10 @@ def fitnessFunction(chromosome):
                 classes_in_day.clear()
                 day_classes = []
 
-        f2 = 1/(1+c2)
-        return f1+f2
+        return 1/(1+(c1+c2))
 
     fitness_value += hardConstraints(chromosome)
-    # total_val += 1/(2+sconflicts)
+
 
     return (fitness_value)
 
@@ -251,5 +250,58 @@ for chromosome in pop:
 
 # for i in range(len(pop)):
 #     print(pop[i],Fit_values[i])
+# print(pop[Fit_values.index(max(Fit_values))],max(Fit_values))
 
-print(pop[Fit_values.index(max(Fit_values))],max(Fit_values))
+#---------------------------------------------------------------------------#
+
+# Crossover 
+
+# We use random or non-random multipoint crossover here 
+# Random multipoint : two parents are chosen to crossover by roullete wheel selection , then a random value N (no. of points 
+# of crossover) ranging from 1 to 119 is chosen. Following which the multipoint crossover is done. 
+
+# Non-Random multipoint : We can fix the no. of points of crossover to suitable value
+
+# Selection ( of parents )
+roullete_pool = []
+for i in range(len(pop)):
+    for j in range(int(Fit_values[i]*1000)):
+        roullete_pool.append(pop[i])
+
+# Roullete Wheel selection of parents
+p1 = random.randint(0,len(roullete_pool))
+p2 = random.randint(0,len(roullete_pool))
+# print(p1,p2)
+# print(roullete_pool[p1])
+# print(roullete_pool[p2])
+
+def crossover(p1,p2):
+    parent1 = openChromosome(p1)
+    parent2 = openChromosome(p2)
+
+    # 10 Multipoint crossover 
+    N = 9
+    cpoints = []
+    for i in range(N):
+        cpoints.append(random.randint(0,120))
+    cpoints = sorted(list(set(cpoints)))
+    cpoints.append(120)
+    print(cpoints)
+    ip = 0
+
+    offspring1 = []
+    for i in range(0,N,2):
+        fp = cpoints[i]
+        offspring1.append(parent1[ip:fp])
+        ip = fp
+        fp = cpoints[i+1]
+        offspring1.append(parent2[ip:fp])
+        ip = fp
+    print(parent1)
+    print(parent2)
+    print(len(offspring1))
+
+
+
+
+crossover(roullete_pool[p1],roullete_pool[p2])
