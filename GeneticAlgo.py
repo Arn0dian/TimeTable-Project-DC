@@ -1,10 +1,10 @@
 import csv
+import itertools
 import random
+import time
 import pandas as pd
 import numpy as np
-
-
-
+st = time.time()
 fp = pd.read_csv('faculty.csv')
 cp = pd.read_csv('courses.csv')
 # print(cp)
@@ -28,49 +28,29 @@ course_type_dict = {}
 # Initialize all table values
 
 def initializeTables():
-    for i in fp['Faculty_Name']:
-        total_teacher_list.append(i)
-
-    for i in cp['Course_Name']:
-        total_subject_list.append(i)
-        
-    for i in cp['Semester']:
-        total_batch_list.add(i)
-
-    tdf = cp.loc[cp['Type'] == 'L'] # Temporary dataframe to just search for course with type L 
-    for i, j in zip(tdf['Course_Code'], tdf['NOCW']):
-        subject_lab_credithour_dict[i] = j
-
-    tdf = cp.loc[cp['Type'] == 'N'] # Same as above
-    for i, j in zip(tdf['Course_Code'], tdf['NOCW']):
-        subject_credithour_dict[i] = j
-
-    for i in total_batch_list:
-        tdf = cp.loc[cp['Semester'] == i]
-        for j in tdf['Course_Code']:
-            if i not in subject_batch_dict:
-                subject_batch_dict[i] = [j]
-            else:
-                subject_batch_dict[i].append(j)
+    global total_teacher_list, total_subject_list, total_batch_list
+    global subject_lab_credithour_dict, subject_credithour_dict, subject_batch_dict
+    global no_class_hours_dict, subject_batch_ind_dict, subject_teacher_dict, course_type_dict
     
-    #adding no class to each sem
-    for i in total_batch_list:
-        tdf = cp.loc[cp['Semester'] == i]
-        sch = 0
-        for j in tdf['NOCW']:
-            sch+=j
-        subject_batch_dict[i].append('NC'+str(i))
-        no_class_hours_dict['NC'+str(i)] = 30-sch # How many classes are free for each batch
-        course_type_dict['NC'+str(i)] = 'NC'
-        
+    total_teacher_list = list(fp['Faculty_Name'])
+    total_subject_list = list(cp['Course_Name'])
+    total_batch_list = set(cp['Semester'])
+    
+    subject_lab_credithour_dict = dict(zip(cp.loc[cp['Type'] == 'L', 'Course_Code'], cp.loc[cp['Type'] == 'L', 'NOCW']))
+    subject_credithour_dict = dict(zip(cp.loc[cp['Type'] == 'N', 'Course_Code'], cp.loc[cp['Type'] == 'N', 'NOCW']))
+    
+    subject_batch_dict = {i: list(tdf['Course_Code']) + ['NC'+str(i)]
+                          for i, tdf in cp.groupby('Semester')}
+    
+    no_class_hours_dict = {'NC'+str(i): 30 - tdf['NOCW'].sum()
+                           for i, tdf in cp.groupby('Semester')}
+    course_type_dict = {'NC'+str(i): 'NC' for i in total_batch_list}
+    
     for i, j in zip(cp['Course_Code'], cp['Semester']):
-        subject_batch_ind_dict[i] = j # Subject to its batch mapping
-
-    for i, j in zip(cp['Course_Code'], cp['Faculty_id']):
-        subject_teacher_dict[i] = j
-
-    for i, j in zip(cp['Course_Code'], cp['Type']):
-        course_type_dict[i] = j
+        subject_batch_ind_dict[i] = j
+        
+    subject_teacher_dict = dict(zip(cp['Course_Code'], cp['Faculty_id']))
+    course_type_dict.update(dict(zip(cp['Course_Code'], cp['Type'])))
     
 #---------------------------------------------------------#
 
@@ -82,15 +62,11 @@ def initializeTables():
 def initializeChromosome():
     initializeTables()
     week = []
-    day = []
-    slot = []
     for i in range(5):
         day = []
-        for i in range(6):
-            slot = []
-            for i in range(4):
-                slot.append('')
-            day.append(slot)
+        for j in range(6):
+            slots = ['' for k in range(4)]
+            day.append(slots)
         week.append(day)
         
     for day in week:
@@ -118,6 +94,8 @@ def initializeChromosome():
                             subject_batch_dict[(i*2)+2].remove(sub)
 
     return week
+
+
 
 def openChromosome(week):
     oweek = []
@@ -165,17 +143,16 @@ def fitnessFunction(chromosome):
         c1 = 0
         for day in week:
             for slot in day:
-                for sub in slot:
-                    for osub in slot:
-                        if sub!='' and osub!='':   
-                            # Faculty clash check
-                            if sub!=osub and subject_teacher_dict[sub]==subject_teacher_dict[osub]:
-                                c1+=1
-                            # Lab clash check
-                            if sub!=osub and course_type_dict[sub]=='L' and course_type_dict[osub]=='L':   
-                                if lab_alloted[subject_batch_ind_dict[sub]] == lab_alloted[subject_batch_ind_dict[osub]]:
-                                    c1+=1   
-        c1 = c1//2
+                for sub, osub in itertools.combinations(slot, 2):
+                    if sub and osub:
+                        # Faculty clash check
+                        if sub != osub and subject_teacher_dict[sub] == subject_teacher_dict[osub]:
+                            c1 += 1
+                        # Lab clash check
+                        if sub != osub and course_type_dict[sub] == 'L' and course_type_dict[osub] == 'L':
+                            if lab_alloted[subject_batch_ind_dict[sub]] == lab_alloted[subject_batch_ind_dict[osub]]:
+                                c1 += 1
+        c1 //= 2
 
         # Faculty should get a slot off after teaching 2 hours continously ( not nessacary to same batch )  
         # for day in week:
@@ -188,46 +165,33 @@ def fitnessFunction(chromosome):
 
         # Every batch should have only one class of 2 continous classes 
         # Do this for the faculty
-        # And no class should be repeated after later in day or should only be 2 hours class
+
+        # And no class should be repeated after later in day or should only be 2 hours class - done
 
         
         # We calculate these conflicts by calculating the total count of a subject in a day and the longest continous class of 
         # that subject ; then no. of conflict = (total class - longest class) + (longest class - 2)
         c2 = 0
-        two_class_day = set()
-        day_classes = []
-        classes_in_day = set()
         for day in week:
             for j in range(4):
-                for i in range(6):
-                    day_classes.append(day[i][j])
-                # We apply the checks here on each day classes of each batch
-                for sub in day_classes:
-                    if sub!='' and sub not in classes_in_day:
-                        classes_in_day.add(sub)
+                day_classes = [day[i][j] for i in range(6)]
+                for sub in set(day_classes):
+                    if sub != '':
                         tc = day_classes.count(sub)
                         c = 0
                         lc = 0
                         for i in range(len(day_classes)):
                             if day_classes[i] == sub:
-                                c+=1
+                                c += 1
                             else:
-                                lc = max(lc,c)
+                                lc = max(lc, c)
                                 c = 0
-                        lc = max(lc,c)
-                        
-                        if lc>=2:
-                            two_class_day.add(sub)
-                        if lc == 1:
-                            c2+= (tc-lc)
-                        else:
-                            c2+= (tc-lc)+(lc-2)
+                        lc = max(lc, c)
 
-                if len(two_class_day)>1:
-                    c2+= len(two_class_day)-1
-                two_class_day.clear()
-                classes_in_day.clear()
-                day_classes = []
+                        if lc == 1:
+                            c2 += (tc - lc)
+                        else:
+                            c2 += (tc - lc) + (lc - 2)
 
         return 1/(1+(c1+c2))
 
@@ -256,74 +220,81 @@ for chromosome in pop:
 
 # Non-Random multipoint : We can fix the no. of points of crossover to suitable value
 
+
 def crossover(pop):
-    # Selection ( of parents )
-    roullete_pool = []
-    for i in range(len(pop)):
-        for j in range(int(Fit_values[i]*1000)):
-            roullete_pool.append(pop[i])
 
-    # Roullete Wheel selection of parents
-    p1 = random.randint(0,len(roullete_pool)-1)
-    parent1 = roullete_pool[p1]
-    while parent1 in roullete_pool:
-        roullete_pool.remove(parent1)
+    # assume the population is a list of individuals with corresponding fitness values
+    population = [(indiv, fitness) for indiv, fitness in zip(pop, Fit_values)]
+
+    # select the first parent
+    parent1 = random.choice(population)[0]
+    # select the second parent
+    while True:
+        parent2 = random.choice(population)[0]
+        if parent2 != parent1:
+            break
+        
     pop.remove(parent1)
-
-    p2 = random.randint(0,len(roullete_pool)-1)
-    parent2 = roullete_pool[p2]
-    while parent2 in roullete_pool:
-        roullete_pool.remove(parent2)
     pop.remove(parent2)
 
     parent1 = openChromosome(parent1)
     parent2 = openChromosome(parent2)
 
     # Will crossover happen.? A probability
+    # Define the crossover probability
+    crossProb = 0.7
 
-    # Crossover probability calculation / test
-    crossProb = 0.6
-    if random.randint(0,100)<=(crossProb*100):
-        # Perform crossover
-        # N Multipoint crossover 
-        N = 15
-        cpoints = [0]
-        for i in range(N):
-            cpoints.append(random.randint(1,119))
-        cpoints = sorted(list(set(cpoints)))
-        cpoints.append(120)
+    # Check if crossover should be performed
+    if random.random() <= crossProb:
+    # Perform crossover
+    # N Multipoint crossover 
+        N = 10
+        cpoints = sorted(random.sample(range(1, 120), N-1))
 
+        # Add the endpoints of the chromosome to the list of crossover points
+        cpoints = [0] + cpoints + [120]
+
+        # Extract segments from parents and create offspring
         offspring1 = []
-        for i in range(0,len(cpoints)-1):
-            if (i%2)==0:
-                for j in range(cpoints[i],cpoints[i+1]):
-                    offspring1.append(parent1[j])
-            else:
-                for j in range(cpoints[i],cpoints[i+1]):
-                    offspring1.append(parent2[j])
-
         offspring2 = []
-        for i in range(0,len(cpoints)-1):
-            if (i%2)==0:
-                for j in range(cpoints[i],cpoints[i+1]):
-                    offspring2.append(parent2[j])
+        for i in range(len(cpoints)-1):
+            if i % 2 == 0:
+                seg_length = cpoints[i+1] - cpoints[i]
+                if len(offspring1) + seg_length <= 120:
+                    offspring1 += parent1[cpoints[i]:cpoints[i+1]]
+                else:
+                    offspring1 += parent1[cpoints[i]:cpoints[i]+(120-len(offspring1))]
+                seg_length = cpoints[i+1] - cpoints[i]
+                if len(offspring2) + seg_length <= 120:
+                    offspring2 += parent2[cpoints[i]:cpoints[i+1]]
+                else:
+                    offspring2 += parent2[cpoints[i]:cpoints[i]+(120-len(offspring2))]
             else:
-                for j in range(cpoints[i],cpoints[i+1]):
-                    offspring2.append(parent1[j])
+                seg_length = cpoints[i+1] - cpoints[i]
+                if len(offspring1) + seg_length <= 120:
+                    offspring1 += parent2[cpoints[i]:cpoints[i+1]]
+                else:
+                    offspring1 += parent2[cpoints[i]:cpoints[i]+(120-len(offspring1))]
+                seg_length = cpoints[i+1] - cpoints[i]
+                if len(offspring2) + seg_length <= 120:
+                    offspring2 += parent1[cpoints[i]:cpoints[i+1]]
+                else:
+                    offspring2 += parent1[cpoints[i]:cpoints[i]+(120-len(offspring2))]
 
-        offspring1 = closeChromosome(offspring1)
-        offspring2 = closeChromosome(offspring2)
-    
         # Mutation --------------------------------------------#
         # We perform swap or scramble mutation
         # Go within the slot and change the randomly chosen batch classes
-        
 
 
 
 
+
+                    
+        offspring1 = closeChromosome(offspring1)
+        offspring2 = closeChromosome(offspring2)
 
         return [offspring1,offspring2]
+    
     else:
         return []
     # print(parent1,fitnessFunction(closeChromosome(parent1)))
@@ -338,8 +309,8 @@ def crossover(pop):
 # This will return a 100 sized new generation of childrens
 # Sometimes it maybe good sometimes it maybe shit
 
-generations = 10
-
+generations = 100
+gnc = 1
 while generations!=0:
     generations -= 1
     # Will make new child population 
@@ -357,8 +328,8 @@ while generations!=0:
             childFit_value.append(fitnessFunction(o1))
             childrenpop.append(o2)
             childFit_value.append(fitnessFunction(o2))
-    pop = pop+childrenpop
-    Fit_values = Fit_values+childFit_value
+    pop += childrenpop
+    Fit_values += childFit_value
     #print(len(pop),len(Fit_values))
     # Will select the best 100 from initial pop and children 
 
@@ -373,12 +344,15 @@ while generations!=0:
 
     pop = pop[:popz]
     Fit_values = Fit_values[:popz]
-    print("new gen")
+    print("Generation ",gnc)
+    gnc+=1
+    # import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
     
     
     
 
 # Add binary tournament selection to select the best 100
-
-print(max(Fit_values))
+et = time.time()
+print("time : ",et-st)
+print("Max fitness achived : ",max(Fit_values))
 print(pop[0],fitnessFunction(pop[0]))
