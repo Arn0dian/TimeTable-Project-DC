@@ -114,6 +114,18 @@ def closeChromosome(week):
         cweek.append(slotting[i:i+6])
     return cweek
 
+def popenChromosome(week):
+    poweek = []
+    for day in week:
+        for slot in day:
+            poweek.append(slot)
+    return poweek
+
+def pcloseChromosome(slotting):
+    pcweek = []
+    for i in range(0,len(slotting),6):
+        pcweek.append(slotting[i:i+6])
+    return pcweek
 
 # Create a population 
 popz = 100
@@ -134,11 +146,51 @@ for i in range(popz):
 def returnFit(x):
     return sum([1/(1+i) for i in x])
 
+def repairLost(chromosome):
+
+    courseCred = dict(zip(cp['Course_Code'], cp['NOCW']))
+
+    for day in chromosome:
+            for slot in day:
+                for sub in slot:
+                    if sub!='' and sub in courseCred:
+                        courseCred[sub]-=1
+                        if courseCred[sub] == 0:
+                            del courseCred[sub]
+                    elif sub!='' and sub not in courseCred:
+                        slot[slot.index(sub)] = ''
+    
+    # Create a dictionary of missing classes for each batch
+    missing_class_batch = {}
+    for sub, cred in courseCred.items():
+        if subject_batch_ind_dict[sub] not in missing_class_batch:
+            missing_class_batch[subject_batch_ind_dict[sub]] = [sub]
+        else:
+            missing_class_batch[subject_batch_ind_dict[sub]].append(sub)
+
+    # Assign missing classes to empty slots
+    for day in chromosome:
+        for slot in day:
+            for i, sub in enumerate(slot):
+                if not sub:
+                    if ((i*2)+2) in missing_class_batch:
+                        sb = random.choice(missing_class_batch[(i*2)+2])
+                        slot[i] = sb
+                        courseCred[sb] -= 1
+                        if courseCred[sb] == 0:
+                            del courseCred[sb]
+                            missing_class_batch[((i*2)+2)].remove(sb)
+                            if not missing_class_batch[(i*2)+2]:
+                                del missing_class_batch[(i*2)+2]
+                
+    
+
 
 def fitnessFunction(chromosome):
     conflicts = []
     fitness_value = 0
-    hconflicts = 0
+
+    repairLost(chromosome)
     def hardConstraints(week):
         
         # No faculty should have two classes alloted in same slot of time
@@ -218,13 +270,13 @@ def fitnessFunction(chromosome):
 
 
         # number of occupied slots should not be more than 5
-
         
 
+        
         return returnFit(conflicts)
 
     fitness_value += hardConstraints(chromosome)
-
+    print(conflicts)
     return (fitness_value)
 
 
@@ -249,7 +301,7 @@ for chromosome in pop:
 # Non-Random multipoint : We can fix the no. of points of crossover to suitable value
 
 
-def crossover(pop):
+def crossoverIW(pop):
 
     # assume the population is a list of individuals with corresponding fitness values
     population = [(indiv, fitness) for indiv, fitness in zip(pop, Fit_values)]
@@ -268,9 +320,11 @@ def crossover(pop):
     parent1 = openChromosome(parent1)
     parent2 = openChromosome(parent2)
 
-    # Will crossover happen.? A probability
+    
+    # Try crossover of slots only ---------------- #
+
     # Define the crossover probability
-    crossProb = 0.7
+    crossProb = 0.8
 
     # Check if crossover should be performed
     if random.random() <= crossProb:
@@ -281,7 +335,7 @@ def crossover(pop):
 
         # Add the endpoints of the chromosome to the list of crossover points
         cpoints = [0] + cpoints + [120]
-
+        
         # Extract segments from parents and create offspring
         offspring1 = []
         offspring2 = []
@@ -308,16 +362,7 @@ def crossover(pop):
                     offspring2 += parent1[cpoints[i]:cpoints[i+1]]
                 else:
                     offspring2 += parent1[cpoints[i]:cpoints[i]+(120-len(offspring2))]
-
-        # Mutation --------------------------------------------#
-        # We perform swap or scramble mutation
-        # Go within the slot and change the randomly chosen batch classes
-        
-
-
-
-
-                    
+               
         offspring1 = closeChromosome(offspring1)
         offspring2 = closeChromosome(offspring2)
 
@@ -325,10 +370,110 @@ def crossover(pop):
     
     else:
         return []
-    # print(parent1,fitnessFunction(closeChromosome(parent1)))
-    # print(parent2,fitnessFunction(closeChromosome(parent2)))
-    # print(offspring1,fitnessFunction(offspring1))
-    # print(offspring2,fitnessFunction(offspring2))
+
+#---------------------------#--------------------------------------------#    
+
+def crossoverSW(pop):
+
+    # assume the population is a list of individuals with corresponding fitness values
+    population = [(indiv, fitness) for indiv, fitness in zip(pop, Fit_values)]
+
+    # select the first parent
+    parent1 = random.choice(population)[0]
+    # select the second parent
+    parent2 = random.choice(population)[0]
+
+    if parent1==parent2:
+        pop.remove(parent1)
+    else:
+        pop.remove(parent1)
+        pop.remove(parent2)
+
+    parent1 = popenChromosome(parent1)
+    parent2 = popenChromosome(parent2)
+    
+    crossProb = 0.8
+    # Check if crossover should be performed
+    if random.random() <= crossProb:
+        N = 5
+        cpoints = sorted(random.sample(range(1, 30), N-1))
+
+        # Add the endpoints of the chromosome to the list of crossover points
+        cpoints = [0] + cpoints + [30]
+        
+        # Extract segments from parents and create offspring
+        offspring1 = []
+        offspring2 = []
+
+        for i in range(0,len(cpoints)-1):
+            if (i%2)==0:
+                for j in range(cpoints[i],cpoints[i+1]):
+                    offspring1.append(parent1[j])
+            else:
+                for j in range(cpoints[i],cpoints[i+1]):
+                    offspring1.append(parent2[j])
+
+        for i in range(0,len(cpoints)-1):
+            if (i%2)==0:
+                for j in range(cpoints[i],cpoints[i+1]):
+                    offspring2.append(parent2[j])
+            else:
+                for j in range(cpoints[i],cpoints[i+1]):
+                    offspring2.append(parent1[j])
+
+        offspring1 = pcloseChromosome(offspring1)
+        offspring2 = pcloseChromosome(offspring2)
+
+        return [offspring1,offspring2]
+    else:
+        return []
+
+#-------------------------------#-----------------------------------------#
+
+def uniformCrossover(pop):
+    # assume the population is a list of individuals with corresponding fitness values
+    population = [(indiv, fitness) for indiv, fitness in zip(pop, Fit_values)]
+
+    # select the first parent
+    parent1 = random.choice(population)[0]
+    # select the second parent
+    while True:
+        parent2 = random.choice(population)[0]
+        if parent2 != parent1:
+            break
+        
+    pop.remove(parent1)
+    pop.remove(parent2)
+
+    parent1 = openChromosome(parent1)
+    parent2 = openChromosome(parent2)
+
+    crossProb = 0.8
+
+    # Check if crossover should be performed
+    if random.random() <= crossProb:
+        offspring1 = []
+        offspring2 = []
+
+        for i in range(120):
+            rn = random.random()
+            if rn<=0.3:
+                offspring1.append(parent1[i])
+                offspring2.append(parent2[i])
+            else:
+                offspring1.append(parent2[i])
+                offspring2.append(parent1[i])
+
+        offspring1 = closeChromosome(offspring1)
+        offspring2 = closeChromosome(offspring2)
+
+        return [offspring1,offspring2]
+    
+    else:
+        return []
+
+
+
 
 #----------------------------------------------------------------#
 
@@ -344,11 +489,10 @@ while generations!=0:
     # Will make new child population 
     childrenpop = []
     childFit_value = []
+
     temppop = pop.copy()
-
-
     while temppop!=[]:
-        childrens = crossover(temppop)
+        childrens = uniformCrossover(temppop)
         if childrens!=[]:
             o1,o2 = childrens[0],childrens[1]
             #print(len(temppop))
@@ -356,31 +500,63 @@ while generations!=0:
             childFit_value.append(fitnessFunction(o1))
             childrenpop.append(o2)
             childFit_value.append(fitnessFunction(o2))
+
+
     pop += childrenpop
     Fit_values += childFit_value
-    #print(len(pop),len(Fit_values))
-    # Will select the best 100 from initial pop and children 
-
-    pop.sort(key=fitnessFunction,reverse=True)
-    Fit_values.sort(reverse=True)
-
-    
-    # for i in range(len(pop)):
-    #     print(Fit_values[i],fitnessFunction(pop[i]))
-    
-
-
+    print(len(pop))
+    spop = [val for (_, val) in sorted(zip(Fit_values, pop), key=lambda x: x[0],reverse=True)]
+    pop = spop.copy()
     pop = pop[:popz]
-    Fit_values = Fit_values[:popz]
-    print("Generation ",gnc)
+    Fit_values.clear()
+    for i in pop:
+        Fit_values.append(fitnessFunction(i))
+    
+
+    print("Generation ",gnc," Max Fitness ",Fit_values[0])
+
+    
+    
     gnc+=1
     # import os, psutil; print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
-    
-    
+
+
+def separateChromosome(chromosome):
+    sem2 = {}
+    sem4 = {}
+    sem6 = {}
+    sem8 = {}
+    dayMap = {1:"Mon", 2:"Tue" , 3:"Wed" , 4:"Thurs" , 5:"Fri"}
+    for i in range(len(chromosome)):
+        
+        sem2[dayMap[i+1]] = []
+        sem4[dayMap[i+1]] = []
+        sem6[dayMap[i+1]] = []
+        sem8[dayMap[i+1]] = []
+        for  slot in chromosome[i]:
+            sem2[dayMap[i+1]].append(slot[0])
+            sem4[dayMap[i+1]].append(slot[1])
+            sem6[dayMap[i+1]].append(slot[2])
+            sem8[dayMap[i+1]].append(slot[3])
+    return sem2,sem4,sem6,sem8
+                 
     
 
-# Add binary tournament selection to select the best 100
 et = time.time()
 print("time : ",et-st)
 print("Max fitness achived : ",max(Fit_values))
-print(pop[0],fitnessFunction(pop[0]))
+
+y1 , y2 , y3 , y4 = separateChromosome(pop[0])
+print("\n\n\n\nFirst year\n")
+for k , v in y1.items():
+    print(k,v)
+print("\nSecond year\n")
+for k , v in y2.items():
+    print(k,v)
+print("\nthird year\n")
+for k , v in y3.items():
+    print(k,v)
+print("\nfourth year\n")
+for k , v in y4.items():
+    print(k,v)
+print(fitnessFunction(pop[0]))
