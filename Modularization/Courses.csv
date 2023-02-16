@@ -1,0 +1,28 @@
+Course_ID,Course_Name,Course_Code,Semester,Faculty_id,NOCW,Type
+1,Artificial Intelligence,AI,6,3,3,N
+2,Soft Computing,SC,6,14,4,N
+3,Data and Text Mining,DTM,6,6,4,N
+4,Social Network Analysis,SNA,6,1,3,N
+5,Management Information System,MIS,6,15,3,N
+6,Cloud Computing and Development ,CCD,6,9,3,L
+7,Database Management Systems,DBMS,4,4,3,N
+8,Database Management Systems Lab,DBMS Lab,4,4,2,L
+9,Operating Systems,OS,4,3,3,N
+10,Operating Systems Lab,OS Lab,4,3,2,L
+11,Web Technology,WT,4,2,3,N
+12,Web Technology Lab,WT Lab,4,2,2,L
+13,Discrete Mathematics,DM,4,5,4,N
+14,Organisational Behaviour,OB,4,16,3,N
+15,Parallel and Distributed Computing,PDC,8,2,4,N
+16,Deep Learning,DL,8,4,4,N
+17,Entrepreneurship and Startup II,ESU II,8,13,2,N
+18,Digital Electronics and Logic Circuits,DELC,2,8,3,N
+19,Digital Electronics and Logic Circuits Lab,DELC Lab,2,8,2,L
+20,Object Oriented Programming In Java,OOPJ,2,7,3,N
+21,Object Oriented Programming In Java Lab,OOPJ Lab,2,7,2,L
+22,Data Structures and Algorithms,DSA,2,6,3,N
+23,Data Structures and Algorithms Lab,DSA Lab,2,6,2,L
+24,Engineering Workshop,EW,2,12,2,L
+25,Engineering Mathematics II,EM II,2,5,4,N
+26,Modern Biology,MB,2,10,4,N
+27,Environmental Studies,ES,2,11,2,N
