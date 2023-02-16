@@ -1,0 +1,30 @@
+Add Mutation 
+-------------------------
+Swap: In this approach, you randomly select two slots in the week and swap their subjects. 
+This approach can help create more diversity in the population and can help the algorithm converge to a better solution.
+
+Replace: In this approach, you randomly select a slot in the week and replace its subject with a new subject that is not already 
+present in that day or in the same time slot in other days. This can help introduce new subjects to the timetable and prevent 
+the algorithm from getting stuck in a local minimum.
+
+Shift: In this approach, you randomly select a slot in the week and shift its subject to another slot in the same day or 
+in another day. This can help optimize the timetable by moving subjects to more appropriate slots or days.
+
+Swap-Day: In this approach, you randomly select two days in the week and swap their subjects. 
+This can help introduce more diversity in the population and can help the algorithm converge to a better solution.
+-------------------------
+
+Add more fitness functions
+- Subject taught today then not tommorow
+- Continuity of subjects will be appreciated
+- Each day should have 5 slots filled only at max
+- Load distribution check on students
+- load distribution check on faculty
+
+
+-------------------------
+
+Optimize repairing
+
+------------------------
+
