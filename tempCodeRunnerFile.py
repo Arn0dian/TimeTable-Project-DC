@@ -1,2 +1,0 @@
-
-    generations -= 1

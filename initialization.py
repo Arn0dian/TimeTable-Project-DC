@@ -3,9 +3,11 @@ import random
 import time
 import pandas as pd
 import numpy as np
+
 st = time.time()
 fp = pd.read_csv('faculty.csv')
 cp = pd.read_csv('courses.csv')
+
 # print(cp)
 # print(fp)
 
@@ -53,6 +55,36 @@ def initializeTables():
     
 #---------------------------------------------------------#
 
+def weektosubs(week):
+    oweek = []
+    for day in week:
+            for slot in day:
+                for sub in slot:
+                    oweek.append(sub)
+    return oweek
+
+def substoweek(week):
+    cweek = []
+    slotting = []
+    for i in range(0,len(week),4):
+        slotting.append(week[i:i+4])
+    for i in range(0,len(slotting),6):
+        cweek.append(slotting[i:i+6])
+    return cweek
+
+def weektoslots(week):
+    poweek = []
+    for day in week:
+        for slot in day:
+            poweek.append(slot)
+    return poweek
+
+def slotstoweek(slotting):
+    pcweek = []
+    for i in range(0,len(slotting),6):
+        pcweek.append(slotting[i:i+6])
+    return pcweek
+
 # Intialization 
 
 # Initialize a week chromosome 
@@ -94,40 +126,63 @@ def initializeChromosome():
 
     return week
 
+def allEmpty():
+    for i in subject_batch_dict:
+        if subject_batch_dict[i]!=[]:
+            return False
+    return True
 
+    
+def initializeChromosomeRandom():
+    initializeTables()
+    week = []
+    for i in range(5):
+        day = []
+        for j in range(6):
+            slots = ['' for k in range(4)]
+            day.append(slots)
+        week.append(day)
 
-def weektosubs(week):
-    oweek = []
-    for day in week:
-            for slot in day:
-                for sub in slot:
-                    oweek.append(sub)
-    return oweek
+    week = weektoslots(week)
+    bl = [2,4,6,8]
+    while subject_batch_dict!={}:
 
-def substoweek(week):
-    cweek = []
-    slotting = []
-    for i in range(0,len(week),4):
-        slotting.append(week[i:i+4])
-    for i in range(0,len(slotting),6):
-        cweek.append(slotting[i:i+6])
-    return cweek
+        rns = random.randint(0,29)
+        rnb = random.choice(bl)
+       
+        if week[rns][(rnb//2)-1] == '':
+            sub = random.choice(subject_batch_dict[rnb])
 
-def weektoslots(week):
-    poweek = []
-    for day in week:
-        for slot in day:
-            poweek.append(slot)
-    return poweek
+            if course_type_dict[sub] == 'NC':
+                if no_class_hours_dict[sub]>0:
+                    week[rns][(rnb//2)-1] += ''
+                    no_class_hours_dict[sub]-=1
+                    if no_class_hours_dict[sub] == 0:
+                        subject_batch_dict[rnb].remove(sub)
+            elif course_type_dict[sub] == 'N':
+                if subject_credithour_dict[sub]>0:
+                    week[rns][(rnb//2)-1] += sub
+                    subject_credithour_dict[sub]-=1
+                    if subject_credithour_dict[sub] == 0:
+                        subject_batch_dict[rnb].remove(sub)
+            elif course_type_dict[sub] == "L":
+                if subject_lab_credithour_dict[sub]>0:
+                    week[rns][(rnb//2)-1] += sub
+                    subject_lab_credithour_dict[sub]-=1 
+                    if subject_lab_credithour_dict[sub] == 0:
+                        subject_batch_dict[rnb].remove(sub)
+            
+            if subject_batch_dict[rnb] == []:
+                del subject_batch_dict[rnb]
+                bl.remove(rnb)
 
-def slotstoweek(slotting):
-    pcweek = []
-    for i in range(0,len(slotting),6):
-        pcweek.append(slotting[i:i+6])
-    return pcweek
+        else:
+            continue
+    return slotstoweek(week)
+
 
 # Create a population 
 popz = 100
 pop = []
 for i in range(popz):
-    pop.append(initializeChromosome())
+    pop.append(initializeChromosomeRandom())

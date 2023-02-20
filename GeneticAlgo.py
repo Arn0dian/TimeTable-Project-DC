@@ -2,7 +2,7 @@ import time
 from initialization import *
 from fitness import *
 from crossover import *
-
+print(pop[0])
 st = time.time()
 generations = 100
 gnc = 1
@@ -59,8 +59,7 @@ def separateChromosome(chromosome):
                  
     
 
-et = time.time()
-print("time : ",et-st)
+
 print("Max fitness achived : ",max(Fit_values))
 
 y1 , y2 , y3 , y4 = separateChromosome(pop[0])
@@ -77,3 +76,5 @@ print("\nfourth year\n")
 for k , v in y4.items():
     print(k,v)
 print(fitnessFunction(pop[0]))
+et = time.time()
+print("time : ",et-st)

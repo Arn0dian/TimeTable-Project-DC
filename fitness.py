@@ -21,7 +21,7 @@ def repairLost(chromosome):
                             del courseCred[sub]
                     elif sub!='' and sub not in courseCred:
                         slot[slot.index(sub)] = ''
-    
+
     # Create a dictionary of missing classes for each batch
     missing_class_batch = {}
     for sub, cred in courseCred.items():
@@ -29,7 +29,7 @@ def repairLost(chromosome):
             missing_class_batch[subject_batch_ind_dict[sub]] = [sub]
         else:
             missing_class_batch[subject_batch_ind_dict[sub]].append(sub)
-
+   
     # Assign missing classes to empty slots
     for day in chromosome:
         for slot in day:
@@ -51,8 +51,9 @@ def repairLost(chromosome):
 def fitnessFunction(chromosome):
     conflicts = []
     fitness_value = 0
-
+    
     repairLost(chromosome)
+
     def hardConstraints(week):
 
         
@@ -139,8 +140,6 @@ def fitnessFunction(chromosome):
 
 
         # number of occupied slots should not be more than 5
-        
-        print(conflicts)
         return returnFit(conflicts)
 
     fitness_value += hardConstraints(chromosome)
