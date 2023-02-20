@@ -96,7 +96,7 @@ def initializeChromosome():
 
 
 
-def openChromosome(week):
+def weektosubs(week):
     oweek = []
     for day in week:
             for slot in day:
@@ -104,7 +104,7 @@ def openChromosome(week):
                     oweek.append(sub)
     return oweek
 
-def closeChromosome(week):
+def substoweek(week):
     cweek = []
     slotting = []
     for i in range(0,len(week),4):
@@ -113,14 +113,14 @@ def closeChromosome(week):
         cweek.append(slotting[i:i+6])
     return cweek
 
-def popenChromosome(week):
+def weektoslots(week):
     poweek = []
     for day in week:
         for slot in day:
             poweek.append(slot)
     return poweek
 
-def pcloseChromosome(slotting):
+def slotstoweek(slotting):
     pcweek = []
     for i in range(0,len(slotting),6):
         pcweek.append(slotting[i:i+6])
