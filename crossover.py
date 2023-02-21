@@ -6,6 +6,38 @@ crossProb = 0.8
 # Define mutation probablity
 mutateProb = 0
 
+
+def repairLost(chromosome,p1,p2):
+
+    courseCred = dict(zip(cp['Course_Code'], cp['NOCW']))
+
+    for day in chromosome:
+            for slot in day:
+                for sub in slot:
+                    if sub!='' and sub in courseCred:
+                        courseCred[sub]-=1
+                        if courseCred[sub] == 0:
+                            del courseCred[sub]
+                    elif sub!='' and sub not in courseCred:
+                        slot[slot.index(sub)] = ''
+
+    chromosome = weektosubs(chromosome)
+    for i in range(120):
+        if chromosome[i] == '':
+            if p1[i] in courseCred and p2[i] == '':
+                chromosome[i] = p1[i]
+                courseCred[chromosome[i]] -= 1
+            elif p1[i] == '' and p2[i] in courseCred:
+                chromosome[i] = p2[i]
+                courseCred[chromosome[i]] -= 1
+            if chromosome[i]!='' and courseCred[chromosome[i]] == 0:
+                del courseCred[chromosome[i]]
+
+    chromosome = substoweek(chromosome)
+
+    return chromosome
+
+
 # We use random or non-random multipoint crossover here 
 # Random multipoint : two parents are chosen to crossover by roullete wheel selection , then a random value N (no. of points 
 # of crossover) ranging from 1 to 119 is chosen. Following which the multipoint crossover is done. 
@@ -154,7 +186,6 @@ def uniformCrossover(pop):
     parent1 = weektosubs(parent1)
     parent2 = weektosubs(parent2)
 
-    crossProb = 0.8
 
     # Check if crossover should be performed
     if random.random() <= crossProb:
@@ -172,12 +203,17 @@ def uniformCrossover(pop):
 
         offspring1 = substoweek(offspring1)
         offspring2 = substoweek(offspring2)
-        return [offspring1,offspring2]
-        # rn = random.random()
-        # if rn<=mutateProb:
-        #     return mutationDay(offspring1,offspring2) 
-        # else:
-        #     return [offspring1,offspring2]
+        
+        offspring1 = repairLost(offspring1,parent1,parent2)
+        offspring2 = repairLost(offspring2,parent1,parent2)
+        
+        
+        
+        rn = random.random()
+        if rn<=mutateProb:
+            return mutationDay(offspring1,offspring2) 
+        else:
+            return [offspring1,offspring2]
     
     else:
         return []

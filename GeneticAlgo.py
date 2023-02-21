@@ -2,7 +2,6 @@ import time
 from initialization import *
 from fitness import *
 from crossover import *
-print(pop[0])
 st = time.time()
 generations = 100
 gnc = 1
