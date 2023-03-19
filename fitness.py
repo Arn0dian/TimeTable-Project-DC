@@ -8,17 +8,16 @@ from initialization import *
 def returnFit(x):
     return sum([1/(1+i) for i in x])
 
-
 def fitnessFunction(chromosome):
     conflicts = []
     fitness_value = 0
-    
+
+    # chromosome = substoweek(list(chromosome))
 
     def hardConstraints(week):
 
-        
-        # No faculty should have two classes alloted in same slot of time
-        # No two batches should have same lab alloted to them in same slot of time
+        # 1 No faculty should have two classes alloted in same slot of time
+        # 1 No two batches should have same lab alloted to them in same slot of time
         conflicts.append(0)
         for day in week:
             for slot in day:
@@ -43,15 +42,16 @@ def fitnessFunction(chromosome):
 
         # Every batch should have only one class of 2 continous classes 
         # Do this for the faculty
+        
 
         # And no class should be repeated after later in day or should only be 2 hours class - done
 
         
         # We calculate these conflicts by calculating the total count of a subject in a day and the longest continous class of 
         # that subject ; then no. of conflict = (total class - longest class) + (longest class - 2)
-        conflicts.append(0) # Blank class
-        conflicts.append(0) # Repeated class
-        conflicts.append(0) # lab second half
+        conflicts.append(0) # 2 Blank class
+        conflicts.append(0) # 3 Repeated class
+        conflicts.append(0) # 4 lab second half
         for day in week:
             for j in range(4):
                 day_classes = [day[i][j] for i in range(6)]
@@ -73,7 +73,7 @@ def fitnessFunction(chromosome):
                                 lc = max(lc, c)
                                 c = 0
                         lc = max(lc, c)
-
+ 
                         if lc == 1:
                             conflicts[-2] += (tc - lc)
                         else:
@@ -84,27 +84,67 @@ def fitnessFunction(chromosome):
                     if day_classes[i]!='' and course_type_dict[day_classes[i]]=='L':
                         conflicts[-1] += 0.2
 
-        # Class after lunch and before lunch should not be same                       
+        # 5 Class after lunch and before lunch should not be same                       
         conflicts.append(0)
         for day in week:
-            if set(day[2]) == set(day[3]):
+            if set(day[2]).intersection(set(day[3]))!=set(): 
                 conflicts[-1] += 1
 
         # Try to check if each day have more
 
-        # Try not to fill the first slot of each day ( it is very early in morning )
+        # 6 Try not to fill the first slot of each day ( it is very early in morning )
         conflicts.append(0)
         for day in week:
             if day[0]!=['','','','']:
                 conflicts[-1]+=0.1
 
+        # 7 Class hour discontinuity : breakage between two classes 
+        conflicts.append(0)
+        for day in week:
+            lc = 0
+            cc = 0
+            tc = 0
+            j = 0
+            while j<4:
+                for i in range(6):
+                    if day[i][j]!='':
+                        cc+=1
+                        tc+=1
+                    else:
+                        lc = max(lc,cc)
+                        cc = 0
+                if lc!=tc:
+                    conflicts[-1]+=0.5
+                lc = 0
+                cc = 0
+                tc = 0
+                j+=1
+        
+        # 9 Try to have atleast one 2 hours continous class of a subject with credit >= 3
+
+
+
+        # 8 Subjects held today will not be held tommorow
+
+
+        
+                    
+
+
+
+
+      
         # number of occupied slots should not be more than 5
         return returnFit(conflicts)
 
     fitness_value += hardConstraints(chromosome)
     return (fitness_value)
 
+# for chromosome in pop:
+#     fitness = fitnessFunction(chromosome)
+#     pop[chromosome] = fitness
 
+    
 # Fitness Calculations
 Fit_values = []
 for chromosome in pop:

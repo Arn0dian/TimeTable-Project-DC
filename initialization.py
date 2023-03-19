@@ -123,7 +123,6 @@ def initializeChromosome():
                         subject_lab_credithour_dict[sub]-=1 
                         if subject_lab_credithour_dict[sub] == 0:
                             subject_batch_dict[(i*2)+2].remove(sub)
-
     return week
 
 def allEmpty():
@@ -178,7 +177,62 @@ def initializeChromosomeRandom():
 
         else:
             continue
+    return (slotstoweek(week))
+
+
+def initializeChromosomeNNDSC():
+    initializeTables()
+    week = []
+    for i in range(5):
+        day = []
+        for j in range(6):
+            slots = ['' for k in range(4)]
+            day.append(slots)
+        week.append(day)
+
+    week = weektosubs(week)
+    bl = [2,4,6,8]
+    while subject_batch_dict!={}:
+
+        rns = random.randint(0,29)
+        rnb = random.choice(bl)
+       
+        if week[rns][(rnb//2)-1] == '':
+            sub = random.choice(subject_batch_dict[rnb])
+
+            if course_type_dict[sub] == 'NC':
+                if no_class_hours_dict[sub]>0:
+                    week[rns][(rnb//2)-1] += ''
+                    no_class_hours_dict[sub]-=1
+                    if no_class_hours_dict[sub] == 0:
+                        subject_batch_dict[rnb].remove(sub)
+            elif course_type_dict[sub] == 'N':
+                if subject_credithour_dict[sub]>0:
+                    week[rns][(rnb//2)-1] += sub
+                    subject_credithour_dict[sub]-=1
+                    if subject_credithour_dict[sub] == 0:
+                        subject_batch_dict[rnb].remove(sub)
+            elif course_type_dict[sub] == "L":
+                if subject_lab_credithour_dict[sub]>0:
+                    week[rns][(rnb//2)-1] += sub
+                    subject_lab_credithour_dict[sub]-=1 
+                    if subject_lab_credithour_dict[sub] == 0:
+                        subject_batch_dict[rnb].remove(sub)
+            
+            if subject_batch_dict[rnb] == []:
+                del subject_batch_dict[rnb]
+                bl.remove(rnb)
+
+        else:
+            continue
     return slotstoweek(week)
+
+
+# CREATE A VERY SPECIFIC SELECTIVE INITIALIZATION WITH 2 HOURS CLASS PUT TO PLACE AND 
+# CLASSES TODAY NOT PLACED TMRW UNLESS NEEDED SO 
+# ALSO NOT FILL FIRST AND LAST SLOT IF NEEDED SO
+
+
 
 
 # Create a population 
@@ -186,3 +240,13 @@ popz = 100
 pop = []
 for i in range(popz):
     pop.append(initializeChromosomeRandom())
+
+# popz = 100
+# pop = {}
+# for i in range(popz):
+#     chromosome = weektosubs(initializeChromosomeRandom())
+#     pop[tuple(chromosome)] = -1
+
+
+
+

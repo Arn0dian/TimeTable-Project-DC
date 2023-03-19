@@ -4,7 +4,7 @@ from fitness import *
 # Define the crossover probability
 crossProb = 0.8
 # Define mutation probablity
-mutateProb = 0
+mutateProb = 0.2
 
 
 def repairLost(chromosome,p1,p2):
@@ -169,6 +169,7 @@ def crossoverSW(pop):
 #-------------------------------#-----------------------------------------#
 
 def uniformCrossover(pop):
+
     # assume the population is a list of individuals with corresponding fitness values
     population = [(indiv, fitness) for indiv, fitness in zip(pop, Fit_values)]
 
@@ -176,6 +177,7 @@ def uniformCrossover(pop):
     parent1 = random.choice(population)[0]
     # select the second parent
     while True:
+  
         parent2 = random.choice(population)[0]
         if parent2 != parent1:
             break
@@ -217,6 +219,70 @@ def uniformCrossover(pop):
     
     else:
         return []
+    
+# def uniformCrossover(pop):
+#     # calculate the total fitness of the population
+#     total_fitness = sum(fitness for fitness in pop.values())
+
+#     # select the first parent
+#     rand_num1 = random.uniform(0, total_fitness)
+#     fit_sum = 0
+#     parent1 = None
+#     for chromosome, fitness in pop.items():
+#         fit_sum += fitness
+#         if fit_sum >= rand_num1:
+#             parent1 = chromosome
+#             break
+
+#     # select the second parent
+#     while True:
+#         rand_num2 = random.uniform(0, total_fitness)
+#         fit_sum = 0
+#         parent2 = None
+#         for chromosome, fitness in pop.items():
+#             fit_sum += fitness
+#             if fit_sum >= rand_num2 and chromosome != parent1:
+#                 parent2 = chromosome
+#                 break
+#         if parent2:
+#             break
+
+        
+#     del pop[parent1]
+#     del pop[parent2]
+
+
+#     # Check if crossover should be performed
+#     if random.random() <= crossProb:
+#         offspring1 = []
+#         offspring2 = []
+
+#         for i in range(120):
+#             rn = random.random()
+#             if rn<=0.5:
+#                 offspring1.append(parent1[i])
+#                 offspring2.append(parent2[i])
+#             else:
+#                 offspring1.append(parent2[i])
+#                 offspring2.append(parent1[i])
+
+#         offspring1 = substoweek(offspring1)
+#         offspring2 = substoweek(offspring2)
+        
+#         offspring1 = repairLost(offspring1,parent1,parent2)
+#         offspring2 = repairLost(offspring2,parent1,parent2)
+        
+#         offspring1 = weektosubs(offspring1)
+#         offspring2 = weektosubs(offspring2)
+        
+#         rn = random.random()
+#         if rn<=mutateProb:
+#             return mutationDay(offspring1,offspring2) 
+#         else:
+#             return [offspring1,offspring2]
+    
+#     else:
+#         return []
 
 
 
