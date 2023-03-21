@@ -4,16 +4,80 @@
     <title>JSON to HTML Table</title>
   </head>
   <body>
+    <div>1st Year</div>
     <table>
       <thead>
         <tr>
-          {% for header in headers %}
+          {% for header in header1 %}
           <th>{{ header }}</th>
           {% endfor %}
         </tr>
       </thead>
       <tbody>
-        {% for row in data %}
+        {% for row in data1 %}
+        <tr>
+          {% for value in row.values() %}
+          <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+    <div>2nd Year</div>
+    <table>
+      <thead>
+        <tr>
+          {% for header in header2 %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data2 %}
+        <tr>
+          {% for value in row.values() %}
+          <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+    <div>3rd Year</div>
+    <table>
+      <thead>
+        <tr>
+          {% for header in header3 %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data3 %}
+        <tr>
+          {% for value in row.values() %}
+          <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+    <div>4th Year</div>
+    <table>
+      <thead>
+        <tr>
+          {% for header in header4 %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data4 %}
         <tr>
           {% for value in row.values() %}
           <td>{{ value }}</td>

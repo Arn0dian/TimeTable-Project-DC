@@ -25,17 +25,29 @@ def data():
         f2 = request.files['faculty']
         f2.save(f2.filename)
     call_genetic()
-    with open('thirdYear.csv', newline='') as f:
+    with open('Year1.csv', newline='') as f:
         reader = csv.DictReader(f)
-        data = [row for row in reader]       
+        data1 = [row for row in reader]   
+    with open('Year2.csv', newline='') as f:
+        reader = csv.DictReader(f)
+        data2 = [row for row in reader]    
+    with open('Year3.csv', newline='') as f:
+        reader = csv.DictReader(f)
+        data3 = [row for row in reader]    
+    with open('Year4.csv', newline='') as f:
+        reader = csv.DictReader(f)
+        data4 = [row for row in reader]        
 
 # Create a list of headers
 
-    headers = list(data[0].keys())
+    header1 = list(data1[0].keys())
+    header2 = list(data2[0].keys())
+    header3 = list(data3[0].keys())
+    header4 = list(data4[0].keys())
 
 
 # Render the template with the data and headers
-    return render_template('table.html', data=data,headers=headers)
+    return render_template('table.html', data1=data1,header1=header1,data2=data2,header2=header2,data3=data3,header3=header3,data4=data4,header4=header4)
  
 
 if __name__=="__main__":

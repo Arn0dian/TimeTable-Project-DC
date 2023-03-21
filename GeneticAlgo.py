@@ -68,13 +68,18 @@ def separateChromosome(chromosome):
                  
     
 def convert_To_CSV(tt):
-    final = [['Day','9:30-10:30','10:30-11:30',"11:30-12:30","2:00-3:00","3:00-4:00","4:00-5:00"]]
+    
+    final = [['Day','9:30-10:30','10:30-11:30',"11:30-12:30","2:00-3:00","3:00-4:00","4:00-5:00"]]   
+    
+
     for day in tt.keys():
         tt[day].insert(0,day)
-        final.append(tt[day])
-    with open('thirdYear.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerows(final)
+        final.append(tt[day])   
+    return final 
+    
+        
+
+    
 
 
 
@@ -100,7 +105,22 @@ print("\nfourth year\n")
 for k , v in y4.items():
     print(k,v)
 
-convert_To_CSV(y3)
+
+with open('Year1.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(convert_To_CSV(y1))
+
+with open('Year2.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(convert_To_CSV(y2))
+
+with open('Year3.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(convert_To_CSV(y3))
+
+with open('Year4.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(convert_To_CSV(y4))
                
 print(fitnessFunction(pop[0]))
 
