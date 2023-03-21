@@ -3,9 +3,10 @@ from initialization import *
 from fitness import *
 from crossover import *
 st = time.time()
+import csv
 
 
-generations = 300
+generations = 100
 gnc = 1
 while generations!=0:
     generations -= 1
@@ -66,6 +67,21 @@ def separateChromosome(chromosome):
     return sem2,sem4,sem6,sem8
                  
     
+def convert_To_CSV(tt):
+    final = [['Day','9:30-10:30','10:30-11:30',"11:30-12:30","2:00-3:00","3:00-4:00","4:00-5:00"]]
+    for day in tt.keys():
+        tt[day].insert(0,day)
+        final.append(tt[day])
+    with open('thirdYear.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(final)
+
+
+
+
+
+
+
 
 
 print("Max fitness achived : ",max(Fit_values))
@@ -83,7 +99,13 @@ for k , v in y3.items():
 print("\nfourth year\n")
 for k , v in y4.items():
     print(k,v)
+
+convert_To_CSV(y3)
+               
 print(fitnessFunction(pop[0]))
+
+
+              
 et = time.time()
 print("time : ",et-st)
 

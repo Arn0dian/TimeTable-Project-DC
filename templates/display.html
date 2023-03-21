@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css')}}"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css')}}"> -->
+    <title>Time Table Generation</title>
+
+</head>
+<body>
+<header>
+    <nav class="navbar">
+        <h1 class="header-center">TIME TABLE GENERATOR</h1>
+        <p class="para-center">Solving the famous Time Table Generation Problem using Genetic Algorithms</p>
+    </nav>
+</header>
+
+    <p class="para2">Choose Information for the timetable.</p>
+
+    <form class="" action="/data" method="post" enctype="multipart/form-data">
+        <div>
+            <div>Input Course details</div>
+            <input type="file" name="courses" value="">
+            <div>Input Faculty details</div>
+            <input type="file" name="faculty" value="">
+        
+        </div> <br>
+
+        <p class="para-form"> Press the Submit Button to display the Table</p>
+        <div class="div2"><input type="submit" name="" value="Submit"></div>
+    </form>
+
+</body>
+</html>
