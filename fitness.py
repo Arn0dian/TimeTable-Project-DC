@@ -8,6 +8,26 @@ from initialization import *
 def returnFit(x):
     return sum([1/(1+i) for i in x])
 
+def separateChromosome(chromosome):
+    sem2 = {}
+    sem4 = {}
+    sem6 = {}
+    sem8 = {}
+    dayMap = {1:"Mon", 2:"Tue" , 3:"Wed" , 4:"Thurs" , 5:"Fri"}
+    for i in range(len(chromosome)):
+        
+        sem2[dayMap[i+1]] = []
+        sem4[dayMap[i+1]] = []
+        sem6[dayMap[i+1]] = []
+        sem8[dayMap[i+1]] = []
+        for  slot in chromosome[i]:
+            sem2[dayMap[i+1]].append(slot[0])
+            sem4[dayMap[i+1]].append(slot[1])
+            sem6[dayMap[i+1]].append(slot[2])
+            sem8[dayMap[i+1]].append(slot[3])
+    return sem2,sem4,sem6,sem8
+                 
+
 def fitnessFunction(chromosome):
     conflicts = []
     fitness_value = 0
@@ -101,39 +121,64 @@ def fitnessFunction(chromosome):
         # 7 Class hour discontinuity : breakage between two classes 
         conflicts.append(0)
         for day in week:
-            lc = 0
-            cc = 0
-            tc = 0
-            j = 0
-            while j<4:
+            conflicts_day = []
+            for j in range(4):
+                cc = sum([1 for i in range(6) if day[i][j] != ''])
+                conflicts_day.append(cc)
+            if max(conflicts_day) > 1:
+                conflicts[-1] += 0.5
+
+        # 8 Try to have atleast one 2 hours continous class of a subject with credit >= 3
+        conflicts.append(0)
+        for day in week:
+            for j in range(4):
+                classes = []
                 for i in range(6):
-                    if day[i][j]!='':
-                        cc+=1
-                        tc+=1
-                    else:
-                        lc = max(lc,cc)
-                        cc = 0
-                if lc!=tc:
-                    conflicts[-1]+=0.5
-                lc = 0
-                cc = 0
-                tc = 0
-                j+=1
+                    classes.append(day[i][j])
+                cool_subjects = {}
+                if classes[0]!='' and classes[0] == classes[1]:
+                    if classes[0] in subject_tcredithour_dict:
+                        cool_subjects[classes[0]] = 1
+                elif classes[1]!='' and classes[2] == classes[1]:
+                    if classes[0] in subject_tcredithour_dict:
+                        cool_subjects[classes[0]] = 1
+                elif classes[3]!='' and classes[4] == classes[1]:
+                    if classes[0] in subject_tcredithour_dict:
+                        cool_subjects[classes[0]] = 1
+                elif classes[4]!='' and classes[5] == classes[1]:
+                    if classes[0] in subject_tcredithour_dict:
+                        cool_subjects[classes[0]] = 1
+
+                conflicts[-1]+= (len(subject_tcredithour_dict)-len(cool_subjects))/10
+
+
+
+
+
+        # 9 Subjects held today will not be held tommorow
         
-        # 9 Try to have atleast one 2 hours continous class of a subject with credit >= 3
-
-
-
-        # 8 Subjects held today will not be held tommorow
-
 
         
-                    
+        
+
+        # 10 Try to spread class evenly across all days
+
+        # conflicts.append(0)
+        # y1 , y2 , y3 , y4 = separateChromosome(week)
+        # l = 0
+        # countcl = cp['Semester'].value_counts()[2]
+        # count
+        # print(count)
+        # for day in y1:
+        #     l+= (len(y1[day])-(y1[day].count('')))/5
+        # print(l)                    
+        
+        # 11 Try to only have 1 two hour class in a day for every batch
+        #  
 
 
 
-
-      
+        # print(conflicts)
         # number of occupied slots should not be more than 5
         return returnFit(conflicts)
 

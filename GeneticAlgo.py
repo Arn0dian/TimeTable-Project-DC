@@ -1,4 +1,5 @@
 import time
+import json
 from initialization import *
 from fitness import *
 from crossover import *
@@ -16,13 +17,12 @@ while generations!=0:
 
     temppop = pop.copy()
     while temppop!=[]:
+
         if len(temppop)==2:
             temppop = []
             break
 
-        if len(pop)==2 and pop[0]==pop[-1]:
-            print("yahi hai")
-        childrens = uniformCrossover(temppop)
+        childrens = crossoverIW(temppop)
         if childrens!=[]:
             o1,o2 = childrens[0],childrens[1]
             childrenpop.append(o1)
@@ -71,6 +71,7 @@ def separateChromosome(chromosome):
 print("Max fitness achived : ",max(Fit_values))
 
 y1 , y2 , y3 , y4 = separateChromosome(pop[0])
+
 print("\n\n\n\nFirst year\n")
 for k , v in y1.items():
     print(k,v)
@@ -87,7 +88,24 @@ print(fitnessFunction(pop[0]))
 et = time.time()
 print("time : ",et-st)
 
+output = y1 
+# for key in y2:
+#     for i in range(len(y2[key])):
+#         if y2[key][i]!='':
+#             output[key][i]+=(" / "+y2[key][i])
 
+# for key in y3:
+#     for i in range(len(y3[key])):
+#         if y3[key][i]!='':
+#             output[key][i]+=(" / "+y3[key][i])
+
+# for key in y4:
+#     for i in range(len(y4[key])):
+#         if y4[key][i]!='':
+#             output[key][i]+=(" / "+y4[key][i])
+
+with open("output.json", "w") as outfile:
+    json.dump(output, outfile)
 
 # import time
 # from initialization import *

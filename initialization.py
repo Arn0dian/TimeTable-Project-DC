@@ -31,7 +31,7 @@ course_type_dict = {}
 def initializeTables():
     global total_teacher_list, total_subject_list, total_batch_list
     global subject_lab_credithour_dict, subject_credithour_dict, subject_batch_dict
-    global no_class_hours_dict, subject_batch_ind_dict, subject_teacher_dict, course_type_dict
+    global no_class_hours_dict, subject_batch_ind_dict, subject_teacher_dict, course_type_dict ,subject_tcredithour_dict
     
     total_teacher_list = list(fp['Faculty_Name'])
     total_subject_list = list(cp['Course_Name'])
@@ -39,7 +39,10 @@ def initializeTables():
     
     subject_lab_credithour_dict = dict(zip(cp.loc[cp['Type'] == 'L', 'Course_Code'], cp.loc[cp['Type'] == 'L', 'NOCW']))
     subject_credithour_dict = dict(zip(cp.loc[cp['Type'] == 'N', 'Course_Code'], cp.loc[cp['Type'] == 'N', 'NOCW']))
-    
+
+    subject_tcredithour_dict = dict(zip(cp.loc[(cp['Type'] == 'L') & (cp['NOCW'] >= 3), 'Course_Code'], cp.loc[(cp['Type'] == 'L') & (cp['NOCW'] >= 3), 'NOCW'])) | dict(zip(cp.loc[(cp['Type'] == 'N') & (cp['NOCW'] >= 3), 'Course_Code'], cp.loc[(cp['Type'] == 'N') & (cp['NOCW'] >= 3), 'NOCW'])) 
+
+
     subject_batch_dict = {i: list(tdf['Course_Code']) + ['NC'+str(i)]
                           for i, tdf in cp.groupby('Semester')}
     

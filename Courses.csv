@@ -3,7 +3,7 @@ Course_ID,Course_Name,Course_Code,Semester,Faculty_id,NOCW,Type
 2,Soft Computing,SC,6,14,4,N
 3,Data and Text Mining,DTM,6,6,4,N
 4,Social Network Analysis,SNA,6,1,3,N
-5,Management Information System,MIS,6,15,3,N
+5,Management Information System,MIS,6,15,2,N
 6,Cloud Computing and Development ,CCD,6,9,3,L
 7,Database Management Systems,DBMS,4,4,3,N
 8,Database Management Systems Lab,DBMS Lab,4,4,2,L
