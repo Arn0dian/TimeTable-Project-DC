@@ -40,14 +40,12 @@ def data():
 
 # Create a list of headers
 
-    header1 = list(data1[0].keys())
-    header2 = list(data2[0].keys())
-    header3 = list(data3[0].keys())
-    header4 = list(data4[0].keys())
+    header = list(data1[0].keys())
+
 
 
 # Render the template with the data and headers
-    return render_template('table.html', data1=data1,header1=header1,data2=data2,header2=header2,data3=data3,header3=header3,data4=data4,header4=header4)
+    return render_template('table.html', data1=data1,headers=header,data2=data2,data3=data3,data4=data4)
  
 
 if __name__=="__main__":
