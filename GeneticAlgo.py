@@ -6,7 +6,7 @@ st = time.time()
 import csv
 
 
-generations = 100
+generations = 10
 gnc = 1
 while generations!=0:
     generations -= 1

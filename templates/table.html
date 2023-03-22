@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>JSON to HTML Table</title>
+    <title>Time Tables</title>
+    <link rel="stylesheet"link href="/static/table.css">
   </head>
   <body>
-    <div>1st Year</div>
+    <div class="year">1st Year</div>
     <table>
-      <thead>
+      <thead class="header">
         <tr>
           {% for header in headers %}
           <th>{{ header }}</th>
@@ -25,9 +26,9 @@
     </table>
 
 
-    <div>2nd Year</div>
+    <div class="year">2nd Year</div>
     <table>
-      <thead>
+      <thead class="header">
         <tr>
           {% for header in headers %}
           <th>{{ header }}</th>
@@ -46,9 +47,9 @@
     </table>
 
 
-    <div>3rd Year</div>
+    <div class="year">3rd Year</div>
     <table>
-      <thead>
+      <thead class="header">
         <tr>
           {% for header in headers %}
           <th>{{ header }}</th>
@@ -67,10 +68,10 @@
     </table>
 
 
-    <div>4th Year</div>
+    <div class ="year">4th Year</div>
     <table>
-      <thead>
-        <tr>
+      <thead class="header">
+        <tr >
           {% for header in headers %}
           <th>{{ header }}</th>
           {% endfor %}

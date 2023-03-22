@@ -1,6 +1,6 @@
 Day,9:30-10:30,10:30-11:30,11:30-12:30,2:00-3:00,3:00-4:00,4:00-5:00
-Mon,DM,OS,,OS Lab,DBMS Lab,WT Lab
-Tue,WT,DM,DM,DBMS,WT,
-Wed,OS,DBMS,OB,,OS Lab,WT Lab
-Thurs,OS,OB,,,,
-Fri,DM,OB,,DBMS,WT,
+Mon,WT,DBMS,DBMS,,OB,DM
+Tue,DBMS,OS,OS Lab,DM,OS Lab,DBMS Lab
+Wed,DM,OB,,DM,OS,OB
+Thurs,,WT,OS,,,
+Fri,,DBMS Lab,,,,
