@@ -8,55 +8,36 @@ from initialization import *
 def returnFit(x):
     return sum([1/(1+i) for i in x])
 
-def repairLost(chromosome):
-
-    courseCred = dict(zip(cp['Course_Code'], cp['NOCW']))
-
-    for day in chromosome:
-            for slot in day:
-                for sub in slot:
-                    if sub!='' and sub in courseCred:
-                        courseCred[sub]-=1
-                        if courseCred[sub] == 0:
-                            del courseCred[sub]
-                    elif sub!='' and sub not in courseCred:
-                        slot[slot.index(sub)] = ''
-    
-    # Create a dictionary of missing classes for each batch
-    missing_class_batch = {}
-    for sub, cred in courseCred.items():
-        if subject_batch_ind_dict[sub] not in missing_class_batch:
-            missing_class_batch[subject_batch_ind_dict[sub]] = [sub]
-        else:
-            missing_class_batch[subject_batch_ind_dict[sub]].append(sub)
-
-    # Assign missing classes to empty slots
-    for day in chromosome:
-        for slot in day:
-            for i, sub in enumerate(slot):
-                if not sub:
-                    if ((i*2)+2) in missing_class_batch:
-                        sb = random.choice(missing_class_batch[(i*2)+2])
-                        slot[i] = sb
-                        courseCred[sb] -= 1
-                        if courseCred[sb] == 0:
-                            del courseCred[sb]
-                            missing_class_batch[((i*2)+2)].remove(sb)
-                            if not missing_class_batch[(i*2)+2]:
-                                del missing_class_batch[(i*2)+2]
-                
-    
-
+def separateChromosome(chromosome):
+    sem2 = {}
+    sem4 = {}
+    sem6 = {}
+    sem8 = {}
+    dayMap = {1:"Mon", 2:"Tue" , 3:"Wed" , 4:"Thurs" , 5:"Fri"}
+    for i in range(len(chromosome)):
+        
+        sem2[dayMap[i+1]] = []
+        sem4[dayMap[i+1]] = []
+        sem6[dayMap[i+1]] = []
+        sem8[dayMap[i+1]] = []
+        for  slot in chromosome[i]:
+            sem2[dayMap[i+1]].append(slot[0])
+            sem4[dayMap[i+1]].append(slot[1])
+            sem6[dayMap[i+1]].append(slot[2])
+            sem8[dayMap[i+1]].append(slot[3])
+    return sem2,sem4,sem6,sem8
+                 
 
 def fitnessFunction(chromosome):
     conflicts = []
     fitness_value = 0
 
-    repairLost(chromosome)
+    # chromosome = substoweek(list(chromosome))
+
     def hardConstraints(week):
-        
-        # No faculty should have two classes alloted in same slot of time
-        # No two batches should have same lab alloted to them in same slot of time
+
+        # 1 No faculty should have two classes alloted in same slot of time
+        # 1 No two batches should have same lab alloted to them in same slot of time
         conflicts.append(0)
         for day in week:
             for slot in day:
@@ -81,15 +62,16 @@ def fitnessFunction(chromosome):
 
         # Every batch should have only one class of 2 continous classes 
         # Do this for the faculty
+        
 
         # And no class should be repeated after later in day or should only be 2 hours class - done
 
         
         # We calculate these conflicts by calculating the total count of a subject in a day and the longest continous class of 
         # that subject ; then no. of conflict = (total class - longest class) + (longest class - 2)
-        conflicts.append(0) # Blank class
-        conflicts.append(0) # Repeated class
-        conflicts.append(0) # lab second half
+        conflicts.append(0) # 2 Blank class
+        conflicts.append(0) # 3 Repeated class
+        conflicts.append(0) # 4 lab second half
         for day in week:
             for j in range(4):
                 day_classes = [day[i][j] for i in range(6)]
@@ -111,7 +93,7 @@ def fitnessFunction(chromosome):
                                 lc = max(lc, c)
                                 c = 0
                         lc = max(lc, c)
-
+ 
                         if lc == 1:
                             conflicts[-2] += (tc - lc)
                         else:
@@ -120,18 +102,121 @@ def fitnessFunction(chromosome):
                 # Lab classes should be conducted in second half
                 for i in range(3):
                     if day_classes[i]!='' and course_type_dict[day_classes[i]]=='L':
-                        conflicts[-1] += 0.2
+                        conflicts[-1] += 0.5
 
-        # Class after lunch and before lunch should not be same                       
+        # 5 Class after lunch and before lunch should not be same                       
         conflicts.append(0)
         for day in week:
-            if set(day[2]) == set(day[3]):
+            if set(day[2]).intersection(set(day[3]))!=set(): 
                 conflicts[-1] += 1
 
 
+        # 6 Try not to fill the first slot of each day ( it is very early in morning )
+        # Should not be ran on 1st and second year
+        conflicts.append(0)
+        classes = []
+        for day in week:
+                classes.clear()
+                for i in range(6):
+                    classes.append(day[i][2])   
+                if classes[0]!='':
+                    conflicts[-1]+=0.1
+
+                classes.clear()
+                for i in range(6):
+                    classes.append(day[i][3])    
+                if classes[0]!='':
+                    conflicts[-1]+=0.1
+
+        # 7 Class hour discontinuity : breakage between two classes 
+        conflicts.append(0)
+        for day in week:
+            conflicts_day = []
+            for j in range(4):
+                cc = sum([1 for i in range(6) if day[i][j] != ''])
+                conflicts_day.append(cc)
+            if max(conflicts_day) > 1:
+                conflicts[-1] += 0.5
 
 
-        # number of occupied slots should not be more than 5
+        # 8 Try to have atleast one 2 hours continous class of a subject with credit >= 3
+        conflicts.append(0)
+        cool_subjects = {}
+        for day in week:
+            for j in range(4):
+                classes = []
+                for i in range(6):
+                    classes.append(day[i][j])    
+
+                if classes[0]!='' and classes[0] == classes[1]:
+                    if classes[0] in subject_tcredithour_dict:
+                        cool_subjects[classes[0]] = 1
+
+                if classes[1]!='' and classes[2] == classes[1]:
+                    if classes[1] in subject_tcredithour_dict:
+                        cool_subjects[classes[1]] = 1
+
+                if classes[3]!='' and classes[4] == classes[3]:
+                    if classes[3] in subject_tcredithour_dict:
+                        cool_subjects[classes[3]] = 1
+
+                if classes[4]!='' and classes[5] == classes[4]:
+                    if classes[4] in subject_tcredithour_dict:
+                        cool_subjects[classes[4]] = 1
+
+        conflicts[-1]+= (len(subject_tcredithour_dict)-len(cool_subjects))/1000
+        
+
+        # 9 Subjects held today will not be held tommorow
+        # WORKING WRONG
+        # conflicts.append(0)
+        # week = weektosubs(week)
+        # day_classes = []
+        # for i in range(0,120,24):
+        #     day_classes.append(week[i:i+24])
+        # for i in range(len(day_classes)-1):
+        #     diff = set(day_classes[i]).intersection(set(day_classes[i+1]))
+        #     if '' in diff:
+        #         diff.remove('')
+        #     if diff!={}:
+        #         conflicts[-1]+= 1
+        # week = substoweek(week)
+
+
+
+
+        # 10 Try to spread class evenly across all days
+
+        # conflicts.append(0)
+        # y1 , y2 , y3 , y4 = separateChromosome(week)
+        # l = 0
+        # countcl = cp['Semester'].value_counts()[2]
+        # count
+        # print(count)
+        # for day in y1:
+        #     l+= (len(y1[day])-(y1[day].count('')))/5
+        # print(l)                    
+        
+        # 11 Try to only have 1 two hour class in a day for every batch
+        conflicts.append(0)
+        for day in week:
+                classes = []
+                for i in range(6):
+                    classes.append(day[i][2])    
+                thc = 0
+                if classes[0]!='' and classes[0] == classes[1]:
+                    thc+=1
+                if classes[1]!='' and classes[2] == classes[1]:
+                    thc+=1
+                if classes[3]!='' and classes[4] == classes[3]:
+                    thc+=1
+                if classes[4]!='' and classes[5] == classes[4]:
+                    thc+=1
+                if thc>1:
+                    conflicts[-1]+=0.1
+
+    
+        # 12 Try to have some instructor load balance - after two consequtive classes , have a break
         
 
 
@@ -140,9 +225,12 @@ def fitnessFunction(chromosome):
     fitness_value += hardConstraints(chromosome)
     return (fitness_value)
 
+# for chromosome in pop:
+#     fitness = fitnessFunction(chromosome)
+#     pop[chromosome] = fitness
 
+    
 # Fitness Calculations
-
 Fit_values = []
 for chromosome in pop:
     Fit_values.append(fitnessFunction(chromosome))
