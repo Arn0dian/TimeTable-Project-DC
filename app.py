@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 import pandas as pd
 import csv
 import os
 import time
+
 from subprocess import call
 st = time.time()
 
@@ -40,12 +41,20 @@ def data():
     header = list(data1[0].keys())
 
 
-
 # Render the template with the data and headers
     return render_template('table.html', data1=data1,headers=header,data2=data2,data3=data3,data4=data4)
 
+@app.route('/home')
+def home():
+    return render_template('display.html')
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
+@app.route('/use')
+def use():
+    return render_template('use.html')
 
 if __name__=="__main__":
     app.run(debug=True)

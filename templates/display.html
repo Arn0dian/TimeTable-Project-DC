@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styling.css')}}">
+    <link rel="stylesheet" type="text/css" href="\static\style.css">
     <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css')}}"> -->
     <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css')}}"> -->
     <title>Time Table Generation</title>
@@ -38,9 +38,9 @@
 
     <form class="" action="/data" method="post" enctype="multipart/form-data">
         <div>
-            <div class="in_details">Input Course details</div>
+            <div>Input Course details</div>
             <input type="file" name="courses" value="">
-            <div class="in_details">Input Faculty details</div>
+            <div>Input Faculty details</div>
             <input type="file" name="faculty" value="">
         
         </div> <br>

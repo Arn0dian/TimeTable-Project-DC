@@ -29,8 +29,9 @@ header {}
 
 body {
     margin-top: 0px;
-    background-color: #1A1A1D;
-    background-image: url("bg1.png")
+    background-color: #484f4f;
+    margin-bottom: auto;
+    
     
 }
 
@@ -213,4 +214,56 @@ a.active, a:hover{
         left: 0;
 
     }
+}
+
+.heading{
+    color: #fc467d;
+    text-align: center;
+    padding-left: 350px;
+}
+
+.para1{
+    color: white;
+    text-align: center;
+}
+
+.para2{
+    color: #feb236;
+    text-align: center;
+    font-size: 30px;
+}
+
+.para3{
+    color: #d5f4e6;
+    text-align: justify;
+    font-size: 23px;
+}
+
+.para4{
+    color: #feb236;
+    text-align: center;
+    font-size: 30px;
+}
+
+.list1{
+    color: #d5f4e6;
+    font-size: 21px;
+}
+
+.info1{
+    color: 	#FFCC33;
+    font-size: 30px;
+    text-align: center;
+    padding-left: 400px;
+}
+
+.info2{
+    color: #FF9933;
+    text-align: center;
+}
+
+.point_text{
+    color: 		#FFAE42;
+    text-align: left;
+    font-size: 25px;
 }
