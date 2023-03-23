@@ -3,9 +3,6 @@ import pandas as pd
 import csv
 import os
 import time
-from initialization import *
-from fitness import *
-from crossover import *
 from subprocess import call
 st = time.time()
 
@@ -46,7 +43,9 @@ def data():
 
 # Render the template with the data and headers
     return render_template('table.html', data1=data1,headers=header,data2=data2,data3=data3,data4=data4)
- 
+
+
+
 
 if __name__=="__main__":
     app.run(debug=True)

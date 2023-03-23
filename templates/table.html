@@ -3,10 +3,59 @@
   <head>
     <title>Time Tables</title>
     <link rel="stylesheet"link href="/static/table.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+
+      <script>
+        function saveTablesAsCSV() {
+        // Get all the tables on the page
+        const tables = document.querySelectorAll('table');
+        
+        // Loop through each table and save it as a CSV file
+        tables.forEach((table, index) => {
+          // Create a new CSV file for each table
+          const csvContent = [];
+          
+          // Get the table headers and add them to the CSV file
+          const headers = [];
+          table.querySelectorAll('thead th').forEach(header => {
+            headers.push(header.innerText);
+          });
+          csvContent.push(headers.join(','));
+          
+          // Get the table rows and add them to the CSV file
+          table.querySelectorAll('tbody tr').forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('td').forEach(cell => {
+              rowData.push(cell.innerText);
+            });
+            csvContent.push(rowData.join(','));
+          });
+          
+          // Create a download link for the CSV file
+          const csvBlob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
+          const csvURL = URL.createObjectURL(csvBlob);
+          const downloadLink = document.createElement('a');
+          downloadLink.setAttribute('href', csvURL);
+          downloadLink.setAttribute('download', `Year-${index + 1}.csv`);
+          downloadLink.click();
+        });
+      }
+
+      // Call the saveTablesAsCSV function when the download button is clicked
+      document.querySelector('#download-btn').addEventListener('click', saveTablesAsCSV);
+
+      </script>
+
   </head>
+  <div class= "Heading" >TIME TABLES</div>
+
+  <button class="down_pdf" id="download" onclick="saveTablesAsCSV()"> Download (.csv)</button>
   <body>
-    <div class="year">1st Year</div>
+    
+    
     <table>
+      <caption>Timetable for 1st Year</caption>
       <thead class="header">
         <tr>
           {% for header in headers %}
@@ -26,8 +75,9 @@
     </table>
 
 
-    <div class="year">2nd Year</div>
+    
     <table>
+      <caption>Timetable for 2nd Year</caption>
       <thead class="header">
         <tr>
           {% for header in headers %}
@@ -47,8 +97,9 @@
     </table>
 
 
-    <div class="year">3rd Year</div>
+    
     <table>
+      <caption>Timetable for 3rd Year</caption>
       <thead class="header">
         <tr>
           {% for header in headers %}
@@ -68,9 +119,11 @@
     </table>
 
 
-    <div class ="year">4th Year</div>
+    
     <table>
+      <caption>Timetable for 4th Year</caption>
       <thead class="header">
+
         <tr >
           {% for header in headers %}
           <th>{{ header }}</th>
@@ -87,5 +140,9 @@
         {% endfor %}
       </tbody>
     </table>
+
+
+  
+
   </body>
 </html>

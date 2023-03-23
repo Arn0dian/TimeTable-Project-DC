@@ -37,7 +37,7 @@ body {
 input[type=submit]{
     display: inline-block;
     border: 2px solid #ccc;
-    padding: 12px 30px;
+    padding: 12px 20px;
     cursor: pointer;
     text-align: center;
     font-size: 25px;

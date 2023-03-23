@@ -1,49 +1,73 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto:wght@300&display=swap');
-
-*{
-    margin: 10px;;
-    padding: 10px;
-    outline: 10px;
-}
-body{
-    background-image: url("/static/bg.png");
+/* Set background color and font for the whole page */
+body {
+    background-color: #fff;
+    font-family: Arial, sans-serif;
     background-attachment: fixed;
-    
-}
-
-.year{
-    background-color: rgba(255, 255, 255, 0.566);
-    color: rgba(191, 0, 54, 0.612);
-    border-radius: 12px 12px 12px 12px;
-    font-size: larger;
-    font-weight: bold;
-}
-.header{
-    background-color: rgb(255, 0, 89);
-
-}
-table{
-    position: relative;
-    z-index: 2;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-50%);
-    width: 60%;
-    border-collapse: collapse;
-    border-spacing: 20px;
-    margin-top: 30%;
-    border-radius: 12px 12px 0 0;
-    overflow: hidden;
-    box-shadow: 0 2px 15px rgba(32,32,32,.3);
-    background: #fafafa;
+  }
+  
+  /* Style for the Heading */
+  .Heading{
+    color: #c72c58;
+    font-size: 2.5em;
     text-align: center;
-}
-td{
-    font-family: 'Open Sans', sans-serif;
-}
-table, th, td {
-    border: 1px solid; 
-    border-color: rgba(206, 2, 40, 0.545);  
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-weight: bold;
+    align-items: center;
+  }
+  
+  /* Style for the table caption */
+  caption {
+    font-weight: bold;
+    font-size: 1.5em;
+    color: #67000e;
+    margin-bottom: 0.5em;
+  }
+  
+  /* Set border-collapse and text-align properties for the table */
+  table {
+    border-collapse: collapse;
+    margin: auto;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    text-align: center;
+    width: 80%;
+  }
+  
+  /* Set background color, text color, and border for table header */
+  thead {
+    background-color: #c72c41;
+    color: #fff;
+  }
+  
+  th {
+    border: 1px solid #c72c41;
+    padding: 0.5em;
+  }
+  
+  /* Set background color, text color, and border for table cells */
+  tbody {
+    background-color: #fff;
+    color: #c72c41;
+  }
+  
+  td {
+    border: 1px solid #c72c41;
+    padding: 0.5em;
+  }
+  .down_pdf{
+    background-color: #1fa8cafd;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    align-self: center;
     
   }
+
+  
