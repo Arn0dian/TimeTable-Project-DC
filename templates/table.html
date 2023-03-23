@@ -1,10 +1,37 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Time Tables</title>
-    <link rel="stylesheet"link href="/static/table.css">
+    <link rel="stylesheet" type="text\css" href="main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
+      <script>
+        // Define a function to download the entire HTML page
+          function downloadHTML() {
+            // Get the HTML content of the page
+            const html = document.documentElement.outerHTML;
+            
+            // Create a new blob from the HTML content
+            const blob = new Blob([html], { type: 'text/html' });
+            
+            // Create a URL for the blob
+            const url = URL.createObjectURL(blob);
+            
+            // Create a link element to download the HTML file
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'page.html';
+            
+            // Click the link to download the HTML file
+            link.click();
+            
+            // Clean up the URL object
+            URL.revokeObjectURL(url);
+          }
+
+          // Call the downloadHTML function when the download button is clicked
+          document.querySelector('#download-btn').addEventListener('click', downloadHTML);
+
+      </script>
 
       <script>
         function saveTablesAsCSV() {
@@ -46,17 +73,119 @@
       document.querySelector('#download-btn').addEventListener('click', saveTablesAsCSV);
 
       </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto:wght@300&display=swap');
 
+      *{
+        margin:0;
+        padding: 0;
+        outline: 0;
+      }
+
+      body{
+        background: rgb(238,174,222);
+        background: radial-gradient(circle, rgba(238,174,222,0.948220064724919) 0%, rgba(211,98,236,0.7819502801120448) 45%);
+      }
+
+      .filter{
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        opacity: .7;
+
+        background: rgb(238,174,222);
+        background: radial-gradient(circle, rgba(238,174,222,0.948220064724919) 0%, rgba(155,148,233,1) 100%);
+      }
+
+      table{
+        position: relative;
+        z-index: 2;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        width: 60%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        border-radius: 12px 12px 0 0;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(32,32,32,.3);
+        background: #fafafa;
+        text-align: center;
+        margin-top: 10%;
+      }
+
+      th,td{
+          padding: 12px 15px;
+
+      }
+
+      th{
+          background: #df438c;
+          color: #fafafa;
+          text-transform: uppercase;
+          font-family: 'Roboto',sans-serif;
+      }
+
+      td{
+          font-family: 'Open Sans', sans-serif;
+      }
+
+      .div-text{
+        /* margin-top: 30px; */
+        /* padding-left: 40px; */
+        margin: auto;
+        background: rgb(238,174,222);
+        background: radial-gradient(circle, rgba(238,174,222,0.948220064724919) 0%, rgba(226,72,147,0.927608543417367) 100%);
+        color: black;
+        /* border: 3px solid brown;
+        border-radius: 10px; */
+        width: 80px;
+        height: 40px;
+        text-align: center;
+        font-size: large;
+        font-weight: 700;
+        /* margin-bottom: 50px; */
+        display: block;
+        
+      }
+
+      .down_pdf{
+        background-color: #1fa8cafd;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        
+      }
+
+      button.down_pdf{
+        float: right;
+      }
+
+      .table1{
+        margin-top: 180px;
+      }
+
+    </style>
+    <title>JSON to HTML Table</title>
   </head>
-  <div class= "Heading" >TIME TABLES</div>
-
-  <button class="down_pdf" id="download" onclick="saveTablesAsCSV()"> Download (.csv)</button>
-  <body>
+  <body id="timetable">
+    <button class="down_pdf" id="download" onclick="downloadHTML()"> Download (.pdf)</button>
+    <button class="down_pdf" id="download" onclick="saveTablesAsCSV()"> Download (.csv)</button>
     
     
-    <table>
-      <caption>Timetable for 1st Year</caption>
-      <thead class="header">
+    <div class="div-text">1st Year</div>
+    <table class="table1">
+      <thead>
         <tr>
           {% for header in headers %}
           <th>{{ header }}</th>
@@ -75,10 +204,9 @@
     </table>
 
 
-    
+    <div class="div-text">2nd Year</div>
     <table>
-      <caption>Timetable for 2nd Year</caption>
-      <thead class="header">
+      <thead>
         <tr>
           {% for header in headers %}
           <th>{{ header }}</th>
@@ -97,10 +225,9 @@
     </table>
 
 
-    
+    <div class="div-text">3rd Year</div>
     <table>
-      <caption>Timetable for 3rd Year</caption>
-      <thead class="header">
+      <thead>
         <tr>
           {% for header in headers %}
           <th>{{ header }}</th>
@@ -117,14 +244,11 @@
         {% endfor %}
       </tbody>
     </table>
-
-
     
+    <div class="div-text">4th Year</div>
     <table>
-      <caption>Timetable for 4th Year</caption>
-      <thead class="header">
-
-        <tr >
+      <thead>
+        <tr>
           {% for header in headers %}
           <th>{{ header }}</th>
           {% endfor %}
@@ -140,9 +264,5 @@
         {% endfor %}
       </tbody>
     </table>
-
-
-  
-
   </body>
 </html>

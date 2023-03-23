@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styling1.css')}}">
+      <!-- fonts -->
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700&display=swap" rel="stylesheet">
+      <!-- owl stylesheets --> 
+      <link rel="stylesheet" href="css/owl.carousel.min.css">
+      <link rel="stylesheet" href="css/owl.theme.default.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+   </head>
+
+   <body>
+      <header>
+         <nav>
+            <!-- <input type="checkbox" id="check">
+            <label for="check">
+                <i class="fas fa-bars"></i>
+    
+            </label> -->
+            <label class="logo">Time Table Generator</label>
+            <ul>
+                <li><a class="active" href="http://localhost:5000/home">Home</a></li>
+                <li><a href="http://localhost:5000/about">About</a></li>
+                <li><a href="http://localhost:5000/use">How To Use</a></li>
+            </ul>
+        </nav>
+      </header>
+
+      <p class="heading">About this Website</p>
+      <p class="para1"> Before explaining about this Website, let us explain the main idea and main field of study because of which we were able to write, create and 
+         formulate the algorithm working behind this website. 
+      </p>
+      <h1 class="para2"> Genetic Algorithms </h1>
+      <p class="para3">Genetic algorithms are a type of computational optimization technique that is inspired by the process of natural selection and evolution. In genetic algorithms, a population of candidate solutions to a problem is evolved over multiple generations using genetic operators such as selection, mutation, and crossover to find the optimal solution to the problem. <br><br>
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The basic idea of genetic algorithms is to represent candidate solutions as chromosomes (usually binary strings), which are evaluated using a fitness function that quantifies how well they solve the problem. The fittest chromosomes are then selected for reproduction (i.e., they are used as parents to create offspring), while less fit chromosomes are discarded. <br><br>
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;During the reproduction process, genetic operators such as mutation and crossover are applied to the parent chromosomes to create offspring chromosomes with new combinations of genetic information. The offspring chromosomes are then evaluated using the fitness function, and the fittest ones are selected for the next generation.<br><br>
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This process of selection, reproduction, and evaluation is repeated over multiple generations until an optimal solution is found or a termination condition (e.g., a maximum number of generations) is reached.<br><br>
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Genetic algorithms can be used to solve a wide range of optimization problems, including engineering design, scheduling, resource allocation, and machine learning. They are particularly useful when the solution space is large or complex and traditional optimization techniques may not be effective.<br><br>
+      </p>
+      
+      <p class="para4"> Creating Time Table Generator using Genetic Algorithms</p>
+      <p class="para3">
+         Generating a timetable using genetic algorithms involves representing the timetable as a chromosome, where each gene represents a specific class, teacher, and timeslot combination. The genetic algorithm then evolves the population of chromosomes over multiple generations using genetic operators such as selection, mutation, and crossover, to find the optimal timetable that satisfies all constraints. <br><br>
+         Here's an overview of the steps involved in generating a timetable using genetic algorithms:<br><br>
+
+         <ol class="list1">
+            <li><i style="color: #ffef96">Define the chromosome representation:-</i> The timetable can be represented as a string of genes, where each gene represents a specific class, teacher, and timeslot combination.</li><br>
+            <li><i style="color: #ffef96">Define the fitness function:-</i> The fitness function quantifies how well a timetable satisfies all constraints, such as no clashes between classes, availability of teachers, and minimum/maximum number of classes per day.</li><br>
+            <li><i style="color: #ffef96">Initialize the population:-</i> A population of timetables is randomly generated as the initial population.</li><br>
+            <li><i style="color: #ffef96">Selection:-</i> The fittest timetables are selected to become parents for the next generation using selection methods such as roulette wheel selection or tournament selection.</li><br>
+            <li><i style="color: #ffef96">Crossover:-</i> The selected parents undergo crossover, where genetic information is exchanged between two parents to create a new offspring timetable.</li><br>
+            <li><i style="color: #ffef96">Mutation:-</i> Occasionally, a small number of genes in the offspring timetable are randomly mutated to create new variations.</li><br>
+            <li><i style="color: #ffef96">Evaluate fitness:-</i> The fitness function is applied to the offspring timetables to evaluate their fitness and select the fittest ones to move on to the next generation.</li><br>
+            <li>Repeat <i style="color: #ffef96">steps 4-7</i> until the termination condition is met, such as reaching a maximum number of generations or finding a timetable that satisfies all constraints.</li><br>
+         </ol>
+      </p>
+
+      <p class="para4"> About Us </p>
+      <p class="para3"> We are students of B.Tech CSE Batch (2020-2024) who have designed this project as our Design-Capstone.<br><br>
+         Our Well Wishes.<br>
+         Regards, <p style="color: #ffcc5c; font-size: 25px;">Ayush Mishra, Preetibarna Panda and Ashutosh Pradhan</p></p>
+
+           
+   </body>
+</html>
+

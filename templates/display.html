@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styling.css')}}">
     <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css')}}"> -->
     <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css')}}"> -->
     <title>Time Table Generation</title>
@@ -12,19 +13,34 @@
 </head>
 <body>
 <header>
-    <nav class="navbar">
+
+    <nav>
+        <!-- <input type="checkbox" id="check">
+        <label for="check">
+            <i class="fas fa-bars"></i>
+
+        </label> -->
+        <label class="logo">Time Table Generator</label>
+        <ul>
+            <li><a class="active" href="http://localhost:5000/home">Home</a></li>
+            <li><a href="http://localhost:5000/about">About</a></li>
+            <li><a href="http://localhost:5000/use">How To Use</a></li>
+        </ul>
+    </nav>
+
+    |<div class="div_details">
         <h1 class="header-center">TIME TABLE GENERATOR</h1>
         <p class="para-center">Solving the famous Time Table Generation Problem using Genetic Algorithms</p>
-    </nav>
+    </div>
 </header>
 
     <p class="para2">Choose Information for the timetable.</p>
 
     <form class="" action="/data" method="post" enctype="multipart/form-data">
         <div>
-            <div style="color: rgb(255, 255, 255); font-size: 20px; font-family: 'Times New Roman', Times, serif;">Input Course details</div>
+            <div class="in_details">Input Course details</div>
             <input type="file" name="courses" value="">
-            <div style="color: rgb(255, 255, 255); font-size: 20px; font-family: 'Times New Roman', Times, serif;">Input Faculty details</div>
+            <div class="in_details">Input Faculty details</div>
             <input type="file" name="faculty" value="">
         
         </div> <br>

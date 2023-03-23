@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styling1.css')}}">
+      <!-- fonts -->
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700&display=swap" rel="stylesheet">
+      <!-- owl stylesheets --> 
+      <link rel="stylesheet" href="css/owl.carousel.min.css">
+      <link rel="stylesheet" href="css/owl.theme.default.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+   </head>
+
+   <body>
+      <!-- header section start -->
+      <header>
+         <nav>
+            <!-- <input type="checkbox" id="check">
+            <label for="check">
+                <i class="fas fa-bars"></i>
+    
+            </label> -->
+            <label class="logo">Time Table Generator</label>
+            <ul>
+                <li><a class="active" href="http://localhost:5000/home">Home</a></li>
+                <li><a href="http://localhost:5000/about">About</a></li>
+                <li><a href="http://localhost:5000/use">How To Use</a></li>
+            </ul>
+        </nav>
+      </header>
+      <!-- header section end -->
+
+      <div class="infor">
+         <p class="info1">How To Use Our Time Table Generator</p>
+         <p class="info2">
+            Follow the following steps for generating your Time Table <br> 
+            <ol class="point_text">
+               <li> You have to enter Two CSV :- </li>
+                  <ul>
+                     &nbsp;&nbsp;(a) Faculty CSV file - This file will contain information about all the faculties in an institution.<br>
+                     &nbsp;&nbsp;(b) Courses CSV file - This file will contain information about all the courses taught by the respective faculties.
+                  </ul>
+                  <br>
+               <li> Press the Generate Button to start your generation.</li><br>
+               <li> Hooray, you will get your generated time table.</li><br>
+               <li> You can now download it in pdf format.</li><br>
+            </ol>
+         </p>
+      </div>
+      
+   </body>
+</html>
+
