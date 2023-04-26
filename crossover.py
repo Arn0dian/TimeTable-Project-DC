@@ -20,8 +20,50 @@ def repairLost(chromosome,p1,p2):
                             del courseCred[sub]
                     elif sub!='' and sub not in courseCred:
                         slot[slot.index(sub)] = ''
+    
+    for day in chromosome:
+            for j in range(4):
+                classes = [day[i][j] for i in range(6)]
+
+                if classes[0]=='' and classes[1] in courseCred:
+                    day[0][j] = classes[1]
+                    courseCred[classes[1]]-=1
+                    if courseCred[classes[1]]==0:
+                        del courseCred[classes[1]]
+                    
+                if classes[1]=='' and classes[2] in courseCred:
+                    day[1][j] = classes[2]
+                    courseCred[classes[2]]-=1
+                    if courseCred[classes[2]]==0:
+                        del courseCred[classes[2]]
+
+                if classes[1]=='' and classes[0] in courseCred:
+                    day[1][j] = classes[0]
+                    courseCred[classes[0]]-=1
+                    if courseCred[classes[0]]==0:
+                        del courseCred[classes[0]]
+                    
+                if classes[3]=='' and classes[4] in courseCred:
+                    day[3][j] = classes[4]
+                    courseCred[classes[4]]-=1
+                    if courseCred[classes[4]]==0:
+                        del courseCred[classes[4]]
+
+                if classes[4]=='' and classes[5] in courseCred:
+                    day[4][j] = classes[5]
+                    courseCred[classes[5]]-=1
+                    if courseCred[classes[5]]==0:
+                        del courseCred[classes[5]]
+
+                if classes[4]=='' and classes[3] in courseCred:
+                    day[4][j] = classes[3]
+                    courseCred[classes[3]]-=1
+                    if courseCred[classes[3]]==0:
+                        del courseCred[classes[3]]
+
 
     chromosome = weektosubs(chromosome)
+
     for i in range(120):
         if chromosome[i] == '':
             if p1[i] in courseCred and p2[i] == '':
@@ -33,8 +75,22 @@ def repairLost(chromosome,p1,p2):
             if chromosome[i]!='' and courseCred[chromosome[i]] == 0:
                 del courseCred[chromosome[i]]
 
-    chromosome = substoweek(chromosome)
+    chromosome = weektoslots(substoweek(chromosome))
 
+    while courseCred!={}:
+
+        rs = random.randint(0,29)
+        rsub = random.choice(list(courseCred.keys()))
+        rb = (subject_batch_ind_dict[rsub]-2)//2
+
+        while chromosome[rs][rb]!='':
+            rs = random.randint(0,29)
+        chromosome[rs][rb] = rsub
+        courseCred[rsub] -= 1
+        if courseCred[rsub] == 0:
+            del courseCred[rsub]
+            
+    chromosome = slotstoweek(chromosome)
     return chromosome
 
 
@@ -44,20 +100,24 @@ def repairLost(chromosome,p1,p2):
 
 # Non-Random multipoint : We can fix the no. of points of crossover to suitable value
 
+#-------------------------------#-----------------------------------------#
 
 def crossoverIW(pop):
 
     # assume the population is a list of individuals with corresponding fitness values
     population = [(indiv, fitness) for indiv, fitness in zip(pop, Fit_values)]
 
-    # select the first parent
-    parent1 = random.choice(population)[0]
-    # select the second parent
-    while True:
-        parent2 = random.choice(population)[0]
-        if parent2 != parent1:
-            break
-        
+    # sort the population based on fitness values
+    population.sort(key=lambda x: x[1], reverse=True)
+
+    # shuffle the population list
+    random.shuffle(population)
+
+    # select the first two individuals in the shuffled list as parents
+    parent1 = population[0][0]
+    parent2 = population[1][0]
+
+    # remove parents from the population
     pop.remove(parent1)
     pop.remove(parent2)
 
@@ -104,8 +164,18 @@ def crossoverIW(pop):
                
         offspring1 = substoweek(offspring1)
         offspring2 = substoweek(offspring2)
+        
+        offspring1 = repairLost(offspring1,parent1,parent2)
+        offspring2 = repairLost(offspring2,parent1,parent2)
 
-        return [offspring1,offspring2]
+        rn = random.random()
+        if rn<=mutateProb:
+            return mutationDay(offspring1,offspring2)
+            # o1,o2 = mutationSlot(offspring1,offspring2) 
+            # return mutationDay(o1,o2)
+        else:
+            return [offspring1,offspring2]
+ 
     
     else:
         return []
@@ -159,10 +229,23 @@ def crossoverSW(pop):
                 for j in range(cpoints[i],cpoints[i+1]):
                     offspring2.append(parent1[j])
 
+
+        parent1 = slotstoweek(parent1)
+        parent2 = slotstoweek(parent2)
+        parent1 = weektosubs(parent1)
+        parent2 = weektosubs(parent2)
         offspring1 = slotstoweek(offspring1)
         offspring2 = slotstoweek(offspring2)
 
-        return [offspring1,offspring2]
+        offspring1 = repairLost(offspring1,parent1,parent2)
+        offspring2 = repairLost(offspring2,parent1,parent2)
+
+        rn = random.random()
+        if rn<=mutateProb:
+            return mutationDay(offspring1,offspring2) 
+            
+        else:
+            return [offspring1,offspring2]
     else:
         return []
 
@@ -177,7 +260,6 @@ def uniformCrossover(pop):
     parent1 = random.choice(population)[0]
     # select the second parent
     while True:
-  
         parent2 = random.choice(population)[0]
         if parent2 != parent1:
             break
@@ -213,13 +295,16 @@ def uniformCrossover(pop):
         
         rn = random.random()
         if rn<=mutateProb:
-            return mutationDay(offspring1,offspring2) 
+            o1,o2 = mutationDay(offspring1,offspring2) 
+            return mutationSlot(o1,o2)
         else:
             return [offspring1,offspring2]
     
     else:
         return []
     
+#-------------------------------#-----------------------------------------#
+
 # def uniformCrossover(pop):
 #     # calculate the total fitness of the population
 #     total_fitness = sum(fitness for fitness in pop.values())
@@ -308,7 +393,7 @@ def mutationSlot(chromosome1,chromosome2):
     while rn1==rn2:
         rn2 = random.randint(0,n-1)
     chromosome2[rn1],chromosome2[rn2] = chromosome2[rn2],chromosome2[rn1]
-
+    repairLost
     return [slotstoweek(chromosome1),slotstoweek(chromosome2)]
 
 #---------------------------------------------------#
@@ -324,3 +409,8 @@ def mutationDay(chromosome1,chromosome2):
     chromosome2[rn1],chromosome2[rn2] = chromosome2[rn2],chromosome2[rn1]
 
     return [chromosome1,chromosome2]
+
+def mutationSlotShuffle(chromosome1,chromosome2):
+    return 
+def mutationDayShuffle(chromosome1,chromosome2):
+    return
